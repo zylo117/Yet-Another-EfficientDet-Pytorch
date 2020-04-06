@@ -69,9 +69,8 @@ class Anchors(nn.Module):
     adapted and changed from https://github.com/google/automl/blob/master/efficientdet/anchors.py by Zylo117
     """
 
-    def __init__(self, image_size, anchor_scale=4., pyramid_levels=None, **kwargs):
+    def __init__(self, anchor_scale=4., pyramid_levels=None, **kwargs):
         super().__init__()
-        self.image_size = image_size
         self.anchor_scale = anchor_scale
 
         if pyramid_levels is None:
@@ -119,14 +118,14 @@ class Anchors(nn.Module):
         for stride in self.strides:
             boxes_level = []
             for scale, ratio in itertools.product(self.scales, self.ratios):
-                if self.image_size % stride != 0:
+                if image_shape[1] % stride != 0:
                     raise ValueError('input size must be divided by the stride.')
                 base_anchor_size = self.anchor_scale * stride * scale
                 anchor_size_x_2 = base_anchor_size * ratio[0] / 2.0
                 anchor_size_y_2 = base_anchor_size * ratio[1] / 2.0
 
-                x = np.arange(stride / 2, self.image_size, stride)
-                y = np.arange(stride / 2, self.image_size, stride)
+                x = np.arange(stride / 2, image_shape[1], stride)
+                y = np.arange(stride / 2, image_shape[0], stride)
                 xv, yv = np.meshgrid(x, y)
                 xv = xv.reshape(-1)
                 yv = yv.reshape(-1)

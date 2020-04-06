@@ -15,6 +15,7 @@ import numpy as np
 from efficientdet.utils import BBoxTransform, ClipBoxes
 
 compound_coef = 0
+force_input_size = 1920
 
 obj_list = ['person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus',
             'train', 'truck', 'boat', 'traffic light', 'fire hydrant',
@@ -84,7 +85,8 @@ x = x - (0.485, 0.456, 0.406)
 x = x / (0.229, 0.224, 0.225)
 
 # tf bilinear interpolation is different from any other's, just make do
-imgs_meta = aspectaware_resize_padding(x, 512 + compound_coef * 128, 512 + compound_coef * 128, cv2.INTER_LINEAR)
+input_size = 512 + compound_coef * 128 if force_input_size is None else force_input_size
+imgs_meta = aspectaware_resize_padding(x, input_size, input_size, cv2.INTER_LINEAR)
 x = imgs_meta[0]
 framed_metas = imgs_meta[1:]
 
@@ -142,7 +144,7 @@ def display(preds, imgs):
 
         for j in range(len(preds[i]['rois'])):
             (x1, y1, x2, y2) = preds[i]['rois'][j].astype(np.int)
-            cv2.rectangle(imgs[i], (x1, y1), (x2, y2), (255, 255, 0), 1)
+            cv2.rectangle(imgs[i], (x1, y1), (x2, y2), (255, 255, 0), 2)
             obj = obj_list[label_map[preds[i]['class_ids'][j] + 1] - 1]
             score = float(preds[i]['scores'][j])
 

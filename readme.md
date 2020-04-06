@@ -121,10 +121,10 @@ Conclusion: They are almost the same. Believe it or not, you can check the tenso
 I wonder where does this difference come from, and I'd like some help too.
 
 ### This Repo
-<img src="https://raw.githubusercontent.com/zylo117/Yet-Another-Efficient-Pytorch/master/test/img_inferred_d2_this_repo.jpg" width="512">
+<img src="https://raw.githubusercontent.com/zylo117/Yet-Another-Efficient-Pytorch/master/test/img_inferred_d0_this_repo.jpg" width="512">
 
 ### Official EfficientDet
-<img src="https://raw.githubusercontent.com/zylo117/Yet-Another-Efficient-Pytorch/master/test/img_inferred_d2_official.jpg" width="512">
+<img src="https://raw.githubusercontent.com/zylo117/Yet-Another-Efficient-Pytorch/master/test/img_inferred_d0_official.jpg" width="512">
 
 ## Donation
 

@@ -50,8 +50,7 @@ class EfficientDetBackbone(nn.Module):
                                      num_classes=num_classes,
                                      num_layers=self.box_class_repeats[self.compound_coef])
 
-        self.anchors = Anchors(anchor_scale=self.anchor_scale[compound_coef],
-                               image_size=self.input_sizes[compound_coef], **kwargs)
+        self.anchors = Anchors(anchor_scale=self.anchor_scale[compound_coef], **kwargs)
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
