@@ -9,7 +9,6 @@ from efficientdet.model import BiFPN, Regressor, Classifier, EfficientNet
 from efficientdet.utils import Anchors
 
 
-
 class EfficientDetBackbone(nn.Module):
     def __init__(self, num_anchors=9, num_classes=80, compound_coef=0, load_weights=False, **kwargs):
         super(EfficientDetBackbone, self).__init__()
