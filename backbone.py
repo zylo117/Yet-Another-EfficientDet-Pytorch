@@ -23,10 +23,14 @@ class EfficientDetBackbone(nn.Module):
         self.aspect_ratios = [(1.0, 1.0), (1.4, 0.7), (0.7, 1.4)]
         self.num_scales = 3
         conv_channel_coef = {
-            # TODO: I have only tested on D0/D2, if you want to try it on other coefficients,
+            # TODO: I have only tested on D0~5, if you want to try it on other coefficients,
             #  fill it in with the channels of P3/P4/P5 like this.
             0: [40, 112, 320],
+            1: [40, 112, 320],
             2: [48, 120, 352],
+            3: [48, 136, 384],
+            4: [56, 160, 448],
+            5: [64, 176, 512],
         }
 
         new_num_anchors = len(kwargs.get('ratios', [])) * len(kwargs.get('scales', []))
