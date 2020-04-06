@@ -69,7 +69,7 @@ class Anchors(nn.Module):
     adapted and changed from https://github.com/google/automl/blob/master/efficientdet/anchors.py by Zylo117
     """
 
-    def __init__(self, image_size, anchor_scale=4.0, pyramid_levels=None, **kwargs):
+    def __init__(self, image_size, anchor_scale=4., pyramid_levels=None, **kwargs):
         super().__init__()
         self.image_size = image_size
         self.anchor_scale = anchor_scale

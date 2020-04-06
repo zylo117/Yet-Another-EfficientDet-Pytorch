@@ -19,13 +19,13 @@ class EfficientDetBackbone(nn.Module):
         self.fpn_cell_repeats = [3, 4, 5, 6, 7, 7, 8, 8]
         self.input_sizes = [512, 640, 768, 896, 1024, 1280, 1280, 1536]
         self.box_class_repeats = [3, 3, 3, 4, 4, 4, 5, 5]
-        self.anchor_scale = [4, 4, 3, 4, 4, 4, 4, 5]
+        self.anchor_scale = [4., 4., 4., 4., 4., 4., 4., 5.]
         self.aspect_ratios = [(1.0, 1.0), (1.4, 0.7), (0.7, 1.4)]
         self.num_scales = 3
-        self.anchor_scale = 4.0
         conv_channel_coef = {
             # TODO: I have only tested on D0/D2, if you want to try it on other coefficients,
             #  fill it in with the channels of P3/P4/P5 like this.
+            0: [40, 112, 320],
             2: [48, 120, 352],
         }
 
@@ -47,7 +47,8 @@ class EfficientDetBackbone(nn.Module):
                                      num_classes=num_classes,
                                      num_layers=self.box_class_repeats[self.compound_coef])
 
-        self.anchors = Anchors(image_size=self.input_sizes[compound_coef], **kwargs)
+        self.anchors = Anchors(anchor_scale=self.anchor_scale[compound_coef],
+                               image_size=self.input_sizes[compound_coef], **kwargs)
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):

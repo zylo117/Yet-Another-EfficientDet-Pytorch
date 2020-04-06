@@ -14,6 +14,8 @@ import numpy as np
 
 from efficientdet.utils import BBoxTransform, ClipBoxes
 
+compound_coef = 0
+
 obj_list = ['person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus',
             'train', 'truck', 'boat', 'traffic light', 'fire hydrant',
             'stop sign', 'parking meter', 'bench', 'bird', 'cat', 'dog',
@@ -82,12 +84,12 @@ x = x - (0.485, 0.456, 0.406)
 x = x / (0.229, 0.224, 0.225)
 
 # tf bilinear interpolation is different from any other's, just make do
-imgs_meta = aspectaware_resize_padding(x, 768, 768, cv2.INTER_LINEAR)
+imgs_meta = aspectaware_resize_padding(x, 512 + compound_coef * 128, 512 + compound_coef * 128, cv2.INTER_LINEAR)
 x = imgs_meta[0]
 framed_metas = imgs_meta[1:]
 
-model = EfficientDetBackbone(compound_coef=2, num_classes=90).cuda()
-model.load_state_dict(torch.load('weights/efficientdet-d2.pth'))
+model = EfficientDetBackbone(compound_coef=compound_coef, num_classes=90).cuda()
+model.load_state_dict(torch.load(f'weights/efficientdet-d{compound_coef}.pth'))
 model.requires_grad_(False)
 model.eval()
 x = torch.from_numpy(x).cuda().to(torch.float32).unsqueeze(0).permute(0, 3, 1, 2)
@@ -149,7 +151,8 @@ def display(preds, imgs):
                         (255, 255, 0), 1)
         cv2.imshow('img', imgs[i])
         cv2.waitKey(0)
-        cv2.imwrite(f'test/img_inferred.jpg', imgs[i])
+        cv2.imwrite(f'test/img_inferred_d{compound_coef}_this_repo.jpg', imgs[i])
+
 
 out = invert_affine([framed_metas], out)
 display(out, [ori_img])

@@ -1,4 +1,4 @@
-# EfficientDet Pytorch
+# Yet Another EfficientDet Pytorch
 
 The pytorch re-implement of the official [EfficientDet](https://github.com/google/automl/tree/master/efficientdet) with almost the same performance, original paper link: https://arxiv.org/abs/1911.09070
 
@@ -84,7 +84,30 @@ ___
 
 # Pretrained weights
 
-| coefficient | pth_download | onnx_download | mAP 0.5:0.95(This Repo) | mAP 0.5:0.95(Original) |
+| coefficient | pth_download | onnx_download | mAP 0.5:0.95(This Repo) | mAP 0.5:0.95(Official) |
 | :----------: | :--------: | :-----------: | :--------: | :-----: |
 | D0          |   pending    |    pending    |    pending    | 33.8
-| D2          |   pending    |    pending    |    pending    | 43.0
+| D2          | [efficientdet-d2.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d2.pth) |    pending    |    pending    | 43.0
+
+# Demo
+
+    # install requirements
+    pip install pycocotools
+    pip install torch==1.4.0
+    pip install torchvision==0.5.0
+     
+    # run the simple inference script
+    python efficientdet_test.py
+    
+    
+## Comparison
+
+Conclusion: They are almost the same. Believe it or not, you can check the tensor output, the difference is within 1e-3. 
+
+I wonder where does this difference come from, and I'd like some help too.
+
+### This Repo
+![D2_Inferred](test/img_inferred_d2_this_repo.jpg)
+
+### Official EfficientDet
+![D2_Inferred](test/img_inferred_d2_official.jpg)
