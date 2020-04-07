@@ -5,7 +5,7 @@ The pytorch re-implement of the official [EfficientDet](https://github.com/googl
 
 # Pretrained weights and performance
 
-the weights will be aviliable once I test the mAP, just wait for a little bit longer. 
+The performance is atmost 1.5% lower than the paper's, is close enough. 
 
 | coefficient | pth_download | onnx_download | mAP 0.5:0.95(This Repo) | mAP 0.5:0.95(paper) |
 | :----------: | :--------: | :-----------: | :--------: | :-----: |
@@ -14,7 +14,7 @@ the weights will be aviliable once I test the mAP, just wait for a little bit lo
 | D2 | [efficientdet-d2.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d2.pth) | pending | 41.5 | 43.0
 | D3 | [efficientdet-d3.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d3.pth) | pending | 44.9 | 45.8
 | D4 | [efficientdet-d4.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d4.pth) | pending | 48.1 | 49.4
-| D5 | [efficientdet-d5.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d5.pth) | pending | pending | 50.7
+| D5 | [efficientdet-d5.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d5.pth) | pending | 49.5 | 50.7
 
 
 # FAQ:
