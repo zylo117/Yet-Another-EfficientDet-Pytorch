@@ -21,11 +21,11 @@ The performance is atmost 1.5% lower than the paper's, is close enough.
 
 # FAQ:
 
-Q1. Why implement this while there are several efficientdet pytorch projects already.
+**Q1. Why implement this while there are several efficientdet pytorch projects already.**
 
 A1: Because AFAIK none of them fully recovers the true algorithm of the official efficientdet, that's why their communities could not achieve or having a hard time to achieve the same score as the official efficientdet by training from scratch.
 
-Q2: What exactly is the difference among this repository and the others?
+**Q2: What exactly is the difference among this repository and the others?**
 
 A2: For example, this two are the most popular efficientdet-pytorch,
 
@@ -51,7 +51,7 @@ The second one:
 
 5. Using the wrong output feature of the efficientnet. This is big one. It takes whatever output that has the conv.stride of 2, but it's wrong. It should be the one whose next conv.stride is 2 or the final output of efficientnet.
 
-6. Did not apply same padding on Conv2D and Pooling.
+6. Does not apply same padding on Conv2D and Pooling.
 
 7. Missing swish activation after several operations.
 
@@ -82,11 +82,11 @@ The second one:
     
 And finally some common issues, their anchor decoder and encoder are different from the original one, but it's not the main reason that it performs badly.
 
-Also, Conv2dStaticSamePadding does not performs like TensorFlow, the padding strategy is different.
+Also, Conv2dStaticSamePadding from [EfficientNet-PyTorch](https://github.com/lukemelas/EfficientNet-PyTorch) does not perform like TensorFlow, the padding strategy is different. So I implement a real tensorflow-style [Conv2dStaticSamePadding](efficientnet/utils_extra.py#L9) and [MaxPool2dStaticSamePadding](efficientnet/utils_extra.py#L55) myself.
 
 Despite of the above issues, they are great repositories that enlighten me, hence there is this repository.
 
-This repository is mainly based on [efficientdet](https://github.com/signatrix/efficientdet), with the changing that makes sure that it performs as closer as possible as the original implement.
+This repository is mainly based on [efficientdet](https://github.com/signatrix/efficientdet), with the changing that makes sure that it performs as closer as possible as the paper.
 
 Btw, debugging static-graph TensorFlow v1 is really painful. Don't try to export it with automation tools like tf-onnx or mmdnn, they will only cause more problems because of its custom/complex operations. 
 
@@ -94,6 +94,10 @@ And even if you succeeded, like I did, you will have to deal with the crazy mess
 
 ___
 # Update log
+
+[2020-04-08] update coco eval script and simple inference script.
+
+[2020-04-07] tested D0-D5 mAP, result seems nice. details can be found [here](benchmark/coco_eval_result)
 
 [2020-04-07] fix anchors strategies, please pull the latest code to apply the fix.
 
@@ -104,7 +108,7 @@ ___
 # Demo
 
     # install requirements
-    pip install pycocotools
+    pip install pycocotools numpy opencv-python tqdm
     pip install torch==1.4.0
     pip install torchvision==0.5.0
      
