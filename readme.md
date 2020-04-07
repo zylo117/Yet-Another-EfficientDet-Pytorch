@@ -95,11 +95,11 @@ And even if you succeeded, like I did, you will have to deal with the crazy mess
 ___
 # Update log
 
-[2020-04-07] fix anchors issues, please pull the latest code to apply the fix.
+[2020-04-07] fix anchors strategies, please pull the latest code to apply the fix.
 
-[2020-04-06] adapt anchor from the original.
+[2020-04-06] adapt anchor strategies
 
-[2020-04-05] performs almost the same as the original
+[2020-04-05] finished re-implement efficientdet
  
 # Demo
 
@@ -113,9 +113,16 @@ ___
     
 # TODO
 
+- [X] re-implement efficientdet
+- [X] adapt anchor strategies
 - [X] mAP tests
-- [ ] tensorflow's consistency tuning with pytorch. 
 - [ ] training-scripts
+- [ ] tensorflow's consistency tuning with pytorch. 
+- [ ] efficientdet D6/D7 supports (this should be very easy)
+- [ ] onnx support
+- [ ] float16 mode
+- [ ] float16 mode mAP tests
+- [ ] tensorRT/TVM support
 - [ ] re-implement tensorflow's weird bilinear interpolation algorithm in python, then cython.
     
 # Known issues
@@ -131,10 +138,10 @@ Conclusion: They are almost the same. Believe it or not, you can check the tenso
 I wonder where does this difference come from, and I'd like some help too.
 
 ## This Repo
-<img src="https://raw.githubusercontent.com/zylo117/Yet-Another-Efficient-Pytorch/master/test/img_inferred_d0_this_repo.jpg" width="512">
+<img src="https://raw.githubusercontent.com/zylo117/Yet-Another-Efficient-Pytorch/master/test/img_inferred_d0_this_repo.jpg" width="640">
 
 ## Official EfficientDet
-<img src="https://raw.githubusercontent.com/zylo117/Yet-Another-Efficient-Pytorch/master/test/img_inferred_d0_official.jpg" width="512">
+<img src="https://raw.githubusercontent.com/zylo117/Yet-Another-Efficient-Pytorch/master/test/img_inferred_d0_official.jpg" width="640">
 
 ## Donation
 
