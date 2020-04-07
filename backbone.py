@@ -32,11 +32,7 @@ class EfficientDetBackbone(nn.Module):
             5: [64, 176, 512],
         }
 
-        new_num_anchors = len(kwargs.get('ratios', [])) * len(kwargs.get('scales', []))
-        if new_num_anchors > 0:
-            num_anchors = new_num_anchors
-        else:
-            num_anchors = len(self.aspect_ratios) * self.num_scales
+        num_anchors = len(self.aspect_ratios) * self.num_scales
 
         self.bifpn = nn.Sequential(
             *[BiFPN(self.fpn_num_filters[self.compound_coef],

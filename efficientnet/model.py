@@ -74,16 +74,24 @@ class MBConvBlock(nn.Module):
         # Expansion and Depthwise Convolution
         x = inputs
         if self._block_args.expand_ratio != 1:
-            x = self._swish(self._bn0(self._expand_conv(inputs)))
-        x = self._swish(self._bn1(self._depthwise_conv(x)))
+            x = self._expand_conv(inputs)
+            x = self._bn0(x)
+            x = self._swish(x)
+
+        x = self._depthwise_conv(x)
+        x = self._bn1(x)
+        x = self._swish(x)
 
         # Squeeze and Excitation
         if self.has_se:
             x_squeezed = F.adaptive_avg_pool2d(x, 1)
-            x_squeezed = self._se_expand(self._swish(self._se_reduce(x_squeezed)))
+            x_squeezed = self._se_reduce(x_squeezed)
+            x_squeezed = self._swish(x_squeezed)
+            x_squeezed = self._se_expand(x_squeezed)
             x = torch.sigmoid(x_squeezed) * x
 
-        x = self._bn2(self._project_conv(x))
+        x = self._project_conv(x)
+        x = self._bn2(x)
 
         # Skip connection and drop connect
         input_filters, output_filters = self._block_args.input_filters, self._block_args.output_filters

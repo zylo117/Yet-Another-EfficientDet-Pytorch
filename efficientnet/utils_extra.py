@@ -52,7 +52,7 @@ class Conv2dStaticSamePadding(nn.Module):
         return x
 
 
-class MaxPool2dSamePadding(nn.Module):
+class MaxPool2dStaticSamePadding(nn.Module):
     """
     created by Zylo117
     The real keras/tensorflow MaxPool2d with same padding

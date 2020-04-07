@@ -1,10 +1,10 @@
 import torch.nn as nn
 import torch
+from torchvision.ops.boxes import nms as nms_torch
 
 from efficientnet import EfficientNet as EffNet
 from efficientnet.utils import MemoryEfficientSwish, Swish
-from efficientnet.utils_extra import Conv2dStaticSamePadding, MaxPool2dSamePadding
-from torchvision.ops.boxes import nms as nms_torch
+from efficientnet.utils_extra import Conv2dStaticSamePadding, MaxPool2dStaticSamePadding
 
 
 def nms(dets, thresh):
@@ -84,10 +84,10 @@ class BiFPN(nn.Module):
         self.p4_upsample = nn.Upsample(scale_factor=2, mode='nearest')
         self.p3_upsample = nn.Upsample(scale_factor=2, mode='nearest')
 
-        self.p4_downsample = MaxPool2dSamePadding(3, 2)
-        self.p5_downsample = MaxPool2dSamePadding(3, 2)
-        self.p6_downsample = MaxPool2dSamePadding(3, 2)
-        self.p7_downsample = MaxPool2dSamePadding(3, 2)
+        self.p4_downsample = MaxPool2dStaticSamePadding(3, 2)
+        self.p5_downsample = MaxPool2dStaticSamePadding(3, 2)
+        self.p6_downsample = MaxPool2dStaticSamePadding(3, 2)
+        self.p7_downsample = MaxPool2dStaticSamePadding(3, 2)
 
         self.swish = MemoryEfficientSwish() if not onnx_export else Swish()
 
@@ -109,10 +109,10 @@ class BiFPN(nn.Module):
             self.p5_to_p6 = nn.Sequential(
                 Conv2dStaticSamePadding(conv_channels[2], num_channels, 1),
                 nn.BatchNorm2d(num_channels, momentum=0.01, eps=1e-3),
-                MaxPool2dSamePadding(3, 2)
+                MaxPool2dStaticSamePadding(3, 2)
             )
             self.p6_to_p7 = nn.Sequential(
-                MaxPool2dSamePadding(3, 2)
+                MaxPool2dStaticSamePadding(3, 2)
             )
 
             self.p4_down_channel_2 = nn.Sequential(
