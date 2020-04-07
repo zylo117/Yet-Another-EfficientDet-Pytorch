@@ -78,8 +78,6 @@ And even if you succeeded, like I did, you will have to deal with the crazy mess
 ___
 # Update log
 
-[2020-04-07] found out when there are inconsistency, working on a fix, please re-download the weights and pull the latest code after the fix 
-
 [2020-04-06] adapt anchor from the original.
 
 [2020-04-05] performs almost the same as the original
