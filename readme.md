@@ -22,9 +22,9 @@ The first one:
 
 1. Altered EfficientNet the wrong way, strides have been changed to adapt the BiFPN, but we should be aware that efficientnet's great performance comes from it's specific parameters combinations. Any slight alteration could lead to worse performance.
 
-The Second one:
+The second one:
 
-1. Pytorch's BatchNormalization is slightly different from TensorFlow, momentum_pytorch = 1 - momentum_tensorflow. Well I didn't realize this trap if I pay less attentions. This implement succeeded the parameter from TensorFlow, so the BN will perform badly by being dominated by the running mean and the running variance.
+1. Pytorch's BatchNormalization is slightly different from TensorFlow, momentum_pytorch = 1 - momentum_tensorflow. Well I didn't realize this trap if I paid less attentions. signatrix/efficientdet succeeded the parameter from TensorFlow, so the BN will perform badly by being dominated by the running mean and the running variance.
 
 2. Mis-implement of Depthwise-Separable Conv2D. Depthwise-Separable Conv2D is Depthwise-Conv2D and Pointwise-Conv2D and BiasAdd ,there is only a BiasAdd after two Conv2D, while signatrix/efficientdet has a extra BiasAdd on Depthwise-Conv2D.
 
@@ -78,9 +78,12 @@ And even if you succeeded, like I did, you will have to deal with the crazy mess
 ___
 # Update log
 
-[2020-04-05] performs almost the same as the original
+[2020-04-07] found out when there are inconsistency, working on a fix, please re-download the weights and pull the latest code after the fix 
 
-[2020-04-06] adapt anchor from the original. 
+[2020-04-06] adapt anchor from the original.
+
+[2020-04-05] performs almost the same as the original
+ 
 
 # Pretrained weights
 
