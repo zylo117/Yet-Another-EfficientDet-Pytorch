@@ -53,7 +53,7 @@ class SeparableConvBlock(nn.Module):
 
 class BiFPN(nn.Module):
     """
-    changed by Zylo117
+    modified by Zylo117
     """
     def __init__(self, num_channels, conv_channels, first_time=False, epsilon=1e-4, onnx_export=False):
         """
@@ -243,7 +243,7 @@ class BiFPN(nn.Module):
 
 class Regressor(nn.Module):
     """
-    changed by Zylo117
+    modified by Zylo117
     """
     def __init__(self, in_channels, num_anchors, num_layers, onnx_export=False):
         super(Regressor, self).__init__()
@@ -279,7 +279,7 @@ class Regressor(nn.Module):
 
 class Classifier(nn.Module):
     """
-    changed by Zylo117
+    modified by Zylo117
     """
     def __init__(self, in_channels, num_anchors, num_classes, num_layers, onnx_export=False):
         super(Classifier, self).__init__()
@@ -318,7 +318,7 @@ class Classifier(nn.Module):
 
 class EfficientNet(nn.Module):
     """
-    changed by Zylo117
+    modified by Zylo117
     """
     def __init__(self, compound_coef, load_weights=False):
         super(EfficientNet, self).__init__()

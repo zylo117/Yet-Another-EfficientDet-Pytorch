@@ -78,12 +78,16 @@ And even if you succeeded, like I did, you will have to deal with the crazy mess
 ___
 # Update log
 
+[2020-04-07] fix anchors issues, please pull the latest code to apply the fix.
+
 [2020-04-06] adapt anchor from the original.
 
 [2020-04-05] performs almost the same as the original
  
 
 # Pretrained weights
+
+the weights will be aviliable once I test the mAP, just wait for a little bit longer. 
 
 | coefficient | pth_download | onnx_download | mAP 0.5:0.95(This Repo) | mAP 0.5:0.95(Official) |
 | :----------: | :--------: | :-----------: | :--------: | :-----: |

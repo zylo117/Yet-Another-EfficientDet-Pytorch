@@ -13,7 +13,7 @@ import numpy as np
 from efficientdet.utils import BBoxTransform, ClipBoxes
 
 compound_coef = 0
-force_input_size = None
+force_input_size = 1920  # set None to use default size
 
 obj_list = ['person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus',
             'train', 'truck', 'boat', 'traffic light', 'fire hydrant',
@@ -76,24 +76,25 @@ def aspectaware_resize_padding(image, width, height, interpolation=None, means=N
     return canvas, new_w, new_h, old_w, old_h, padding_w, padding_h
 
 
-# ori_img = cv2.imread('test/img.png')
-# x = cv2.cvtColor(ori_img, cv2.COLOR_BGR2RGB)
-# x = x / 255
-# x = x - (0.485, 0.456, 0.406)
-# x = x / (0.229, 0.224, 0.225)
-#
-# # tf bilinear interpolation is different from any other's, just make do
-# input_size = 512 + compound_coef * 128 if force_input_size is None else force_input_size
-# imgs_meta = aspectaware_resize_padding(x, input_size, input_size, cv2.INTER_LINEAR)
-# x = imgs_meta[0]
-# framed_metas = imgs_meta[1:]
-# x = torch.from_numpy(x).cuda().to(torch.float32).unsqueeze(0).permute(0, 3, 1, 2)
+ori_img = cv2.imread('test/img.png')
+x = cv2.cvtColor(ori_img, cv2.COLOR_BGR2RGB)
+x = x / 255
+x = x - (0.485, 0.456, 0.406)
+x = x / (0.229, 0.224, 0.225)
 
-x = torch.from_numpy(np.load('test/tf.npy')).cuda().permute((0,3,1,2))
+# tf bilinear interpolation is different from any other's, just make do
+input_size = 512 + compound_coef * 128 if force_input_size is None else force_input_size
+imgs_meta = aspectaware_resize_padding(x, input_size, input_size, cv2.INTER_LINEAR)
+x = imgs_meta[0]
+framed_metas = imgs_meta[1:]
+x = torch.from_numpy(x).cuda().to(torch.float32).unsqueeze(0).permute(0, 3, 1, 2)
+
+# x = torch.from_numpy(np.load('test/tf.npy')).cuda().permute((0,3,1,2))
 model = EfficientDetBackbone(compound_coef=compound_coef, num_classes=90).cuda()
 model.load_state_dict(torch.load(f'weights/efficientdet-d{compound_coef}.pth'))
 model.requires_grad_(False)
 model.eval()
+
 with torch.no_grad():
     features, regression, classification, anchors = model(x)
 

@@ -5,46 +5,34 @@ import numpy as np
 
 
 class BBoxTransform(nn.Module):
+    def forward(self, anchors, regression):
+        """
+        decode_box_outputs adapted from https://github.com/google/automl/blob/master/efficientdet/anchors.py
 
-    def __init__(self, mean=None, std=None):
-        super(BBoxTransform, self).__init__()
-        if mean is None:
-            self.mean = torch.from_numpy(np.array([0, 0, 0, 0]).astype(np.float32))
-        else:
-            self.mean = mean
-        if std is None:
-            self.std = torch.from_numpy(np.array([0.1, 0.1, 0.2, 0.2]).astype(np.float32))
-        else:
-            self.std = std
-        if torch.cuda.is_available():
-            self.mean = self.mean.cuda()
-            self.std = self.std.cuda()
+        Args:
+            anchors: [batchsize, boxes, (y1, x1, y2, x2)]
+            regression: [batchsize, boxes, (dy, dx, dh, dw)]
 
-    def forward(self, boxes, deltas):
+        Returns:
 
-        widths = boxes[:, :, 2] - boxes[:, :, 0]
-        heights = boxes[:, :, 3] - boxes[:, :, 1]
-        ctr_x = boxes[:, :, 0] + 0.5 * widths
-        ctr_y = boxes[:, :, 1] + 0.5 * heights
+        """
+        y_centers_a = (anchors[..., 0] + anchors[..., 2]) / 2
+        x_centers_a = (anchors[..., 1] + anchors[..., 3]) / 2
+        ha = anchors[..., 2] - anchors[..., 0]
+        wa = anchors[..., 3] - anchors[..., 1]
 
-        dx = deltas[:, :, 0] * self.std[0] + self.mean[0]
-        dy = deltas[:, :, 1] * self.std[1] + self.mean[1]
-        dw = deltas[:, :, 2] * self.std[2] + self.mean[2]
-        dh = deltas[:, :, 3] * self.std[3] + self.mean[3]
+        w = regression[..., 3].exp() * wa
+        h = regression[..., 2].exp() * ha
 
-        pred_ctr_x = ctr_x + dx * widths
-        pred_ctr_y = ctr_y + dy * heights
-        pred_w = torch.exp(dw) * widths
-        pred_h = torch.exp(dh) * heights
+        y_centers = regression[..., 0] * ha + y_centers_a
+        x_centers = regression[..., 1] * wa + x_centers_a
 
-        pred_boxes_x1 = pred_ctr_x - 0.5 * pred_w
-        pred_boxes_y1 = pred_ctr_y - 0.5 * pred_h
-        pred_boxes_x2 = pred_ctr_x + 0.5 * pred_w
-        pred_boxes_y2 = pred_ctr_y + 0.5 * pred_h
+        ymin = y_centers - h / 2.
+        xmin = x_centers - w / 2.
+        ymax = y_centers + h / 2.
+        xmax = x_centers + w / 2.
 
-        pred_boxes = torch.stack([pred_boxes_x1, pred_boxes_y1, pred_boxes_x2, pred_boxes_y2], dim=2)
-
-        return pred_boxes
+        return torch.stack([xmin, ymin, xmax, ymax], dim=2)
 
 
 class ClipBoxes(nn.Module):
@@ -58,15 +46,15 @@ class ClipBoxes(nn.Module):
         boxes[:, :, 0] = torch.clamp(boxes[:, :, 0], min=0)
         boxes[:, :, 1] = torch.clamp(boxes[:, :, 1], min=0)
 
-        boxes[:, :, 2] = torch.clamp(boxes[:, :, 2], max=width)
-        boxes[:, :, 3] = torch.clamp(boxes[:, :, 3], max=height)
+        boxes[:, :, 2] = torch.clamp(boxes[:, :, 2], max=width - 1)
+        boxes[:, :, 3] = torch.clamp(boxes[:, :, 3], max=height - 1)
 
         return boxes
 
 
 class Anchors(nn.Module):
     """
-    adapted and changed from https://github.com/google/automl/blob/master/efficientdet/anchors.py by Zylo117
+    adapted and modified from https://github.com/google/automl/blob/master/efficientdet/anchors.py by Zylo117
     """
 
     def __init__(self, anchor_scale=4., pyramid_levels=None, **kwargs):
@@ -130,9 +118,9 @@ class Anchors(nn.Module):
                 xv = xv.reshape(-1)
                 yv = yv.reshape(-1)
 
-                # difference from the original y1,x1,y2,x2 to x1,y1,x2,y2
-                boxes = np.vstack((xv - anchor_size_x_2, yv - anchor_size_y_2,
-                                   xv + anchor_size_x_2, yv + anchor_size_y_2,))
+                # y1,x1,y2,x2
+                boxes = np.vstack((yv - anchor_size_y_2, xv - anchor_size_x_2,
+                                   yv + anchor_size_y_2, xv + anchor_size_x_2))
                 boxes = np.swapaxes(boxes, 0, 1)
                 boxes_level.append(np.expand_dims(boxes, axis=1))
             # concat anchors on the same level to the reshape NxAx4

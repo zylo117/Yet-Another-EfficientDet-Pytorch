@@ -92,9 +92,6 @@ class CocoDataset(Dataset):
     def label_to_coco_label(self, label):
         return self.coco_labels[label]
 
-    def num_classes(self):
-        return 80
-
 
 def collater(data):
     imgs = [s['img'] for s in data]
