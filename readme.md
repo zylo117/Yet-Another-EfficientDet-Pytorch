@@ -91,8 +91,8 @@ the weights will be aviliable once I test the mAP, just wait for a little bit lo
 
 | coefficient | pth_download | onnx_download | mAP 0.5:0.95(This Repo) | mAP 0.5:0.95(Official) |
 | :----------: | :--------: | :-----------: | :--------: | :-----: |
-| D0 | [efficientdet-d0.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d0.pth) | pending | pending | 33.8
-| D1 | [efficientdet-d1.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d1.pth) | pending | pending | 39.6
+| D0 | [efficientdet-d0.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d0.pth) | pending | 32.6 | 33.8
+| D1 | [efficientdet-d1.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d1.pth) | pending | 38.2 | 39.6
 | D2 | [efficientdet-d2.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d2.pth) | pending | pending | 43.0
 | D3 | [efficientdet-d3.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d3.pth) | pending | pending | 45.8
 | D4 | [efficientdet-d4.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d4.pth) | pending | pending | 49.4
