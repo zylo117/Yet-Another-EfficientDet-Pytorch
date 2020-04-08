@@ -65,7 +65,7 @@ out = postprocess(x,
                   threshold, iou_threshold)
 
 
-def display(preds, imgs, imwrite=False):
+def display(preds, imgs, imshow=True, imwrite=False):
     for i in range(len(imgs)):
         if len(preds[i]['rois']) == 0:
             continue
@@ -79,8 +79,10 @@ def display(preds, imgs, imwrite=False):
             cv2.putText(imgs[i], '{}, {:.3f}'.format(obj, score),
                         (x1, y1 + 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
                         (255, 255, 0), 1)
-        cv2.imshow('img', imgs[i])
-        cv2.waitKey(0)
+
+        if imshow:
+            cv2.imshow('img', imgs[i])
+            cv2.waitKey(0)
 
         if imwrite:
             cv2.imwrite(f'test/img_inferred_d{compound_coef}_this_repo_{i}.jpg', imgs[i])

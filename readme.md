@@ -5,7 +5,7 @@ The pytorch re-implement of the official [EfficientDet](https://github.com/googl
 
 # Pretrained weights and performance
 
-The performance is atmost 1.5% lower than the paper's, is close enough. 
+The performance is at most 1.5% lower than the paper's, is close enough. 
 
 | coefficient | pth_download | onnx_download | mAP 0.5:0.95(This Repo) | mAP 0.5:0.95(paper) |
 | :----------: | :--------: | :-----------: | :--------: | :-----: |
@@ -108,7 +108,7 @@ ___
 # Demo
 
     # install requirements
-    pip install pycocotools numpy opencv-python tqdm
+    pip install pycocotools numpy opencv-python tqdm tensorboard tensorboardX
     pip install torch==1.4.0
     pip install torchvision==0.5.0
      
