@@ -88,7 +88,7 @@ def postprocess(x, anchors, regression, classification, regressBoxes, clipBoxes,
         scores_per = scores[i, scores_over_thresh[i, :], ...]
         anchors_nms_idx = nms(transformed_anchors_per, scores_per[:, 0], iou_threshold=iou_threshold)
 
-        if anchors_nms_idx.shape[0] == 0:
+        if anchors_nms_idx.shape[0] != 0:
             scores_, classes_ = classification_per[:, anchors_nms_idx].max(dim=0)
             boxes_ = transformed_anchors_per[anchors_nms_idx, :]
 
