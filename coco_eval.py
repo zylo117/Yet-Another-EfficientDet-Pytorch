@@ -1,20 +1,20 @@
 # Author: Zylo117
 
 """
-COCO Evaluations
+COCO-Style Evaluations
 
-put annotations here datasets/coco/annotations/instances_val2017.json
-put images here datasets/coco/annotations/val2017/*.jpg
-put weights here weights/efficientdet-d*.pth
+put images here datasets/your_project_name/annotations/val_set_name/*.jpg
+put annotations here datasets/your_project_name/annotations/instances_{val_set_name}.json
+put weights here /path/to/your/weights/*.pth
 change compound_coef
 
 """
 
 import json
 import os
-import time
 
 import torch
+import yaml
 from tqdm import tqdm
 from pycocotools.coco import COCO
 from pycocotools.cocoeval import COCOeval
@@ -26,17 +26,11 @@ from utils.utils import preprocess, invert_affine, postprocess
 compound_coef = 0
 nms_threshold = 0.5
 use_cuda = True
+project_name = 'coco'
+weights_path = f'weights/efficientdet-d{compound_coef}.pth'
 
-obj_list = ['person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus', 'train', 'truck', 'boat', 'traffic light',
-            'fire hydrant', '', 'stop sign', 'parking meter', 'bench', 'bird', 'cat', 'dog', 'horse', 'sheep',
-            'cow', 'elephant', 'bear', 'zebra', 'giraffe', '', 'backpack', 'umbrella', '', '', 'handbag', 'tie',
-            'suitcase', 'frisbee', 'skis', 'snowboard', 'sports ball', 'kite', 'baseball bat', 'baseball glove',
-            'skateboard', 'surfboard', 'tennis racket', 'bottle', '', 'wine glass', 'cup', 'fork', 'knife', 'spoon',
-            'bowl', 'banana', 'apple', 'sandwich', 'orange', 'broccoli', 'carrot', 'hot dog', 'pizza', 'donut',
-            'cake', 'chair', 'couch', 'potted plant', 'bed', '', 'dining table', '', '', 'toilet', '', 'tv',
-            'laptop', 'mouse', 'remote', 'keyboard', 'cell phone', 'microwave', 'oven', 'toaster', 'sink',
-            'refrigerator', '', 'book', 'clock', 'vase', 'scissors', 'teddy bear', 'hair drier',
-            'toothbrush']
+params = yaml.safe_load(open(f'projects/{project_name}.yml'))
+obj_list = params['obj_list']
 
 
 def evaluate_coco(img_path, set_name, image_ids, coco, model, threshold=0.05):
@@ -116,16 +110,16 @@ def eval(coco_gt, image_ids, pred_json_path):
 
 
 if __name__ == '__main__':
-    SET_NAME = 'val2017'
-    VAL_GT = f'datasets/coco/annotations/instances_{SET_NAME}.json'
-    VAL_IMGS = f'datasets/coco/{SET_NAME}/'
+    SET_NAME = params['val_set']
+    VAL_GT = f'datasets/{params["project_name"]}/annotations/instances_{SET_NAME}.json'
+    VAL_IMGS = f'datasets/{params["project_name"]}/{SET_NAME}/'
     MAX_IMAGES = 10000
     coco_gt = COCO(VAL_GT)
     image_ids = coco_gt.getImgIds()[:MAX_IMAGES]
 
     if not os.path.exists(f'{SET_NAME}_bbox_results.json'):
-        model = EfficientDetBackbone(compound_coef=compound_coef, num_classes=90)
-        model.load_state_dict(torch.load(f'weights/efficientdet-d{compound_coef}.pth'))
+        model = EfficientDetBackbone(compound_coef=compound_coef, num_classes=len(obj_list))
+        model.load_state_dict(torch.load(weights_path))
         model.requires_grad_(False)
         model.eval()
 

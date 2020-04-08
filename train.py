@@ -8,6 +8,7 @@ import argparse
 import traceback
 
 import torch
+import yaml
 from torch.utils.data import DataLoader
 from torchvision import transforms
 from efficientdet.dataset import CocoDataset, Resizer, Normalizer, Augmenter, collater
@@ -21,48 +22,16 @@ from utils.utils import replace_w_sync_bn, CustomDataParallel, get_last_weights,
 
 
 class Params:
-    """
-    Here is what you have to manual specify when you train on a custom dataset.
-    You need to prepare your dataset to be coco-styled
+    def __init__(self, project_file):
+        self.params = yaml.safe_load(open(project_file).read())
 
-    put your dataset under datasets/ like this:
-
-    datasets/
-        -your_project_name/
-            -train_set_name/
-                -*.jpg
-            -val_set_name/
-                -*.jpg
-            -annotations
-                -instances_{train_set_name}.json
-                -instances_{val_set_name}.json
-    """
-    project_name = 'coco'  # also the folder name of the dataset that under 'data_path' folder
-    train_set = 'train2017'
-    val_set = 'val2017'
-    num_gpus = 4
-
-    # mean and std in RGB order
-    mean = [0.485, 0.456, 0.406]
-    std = [0.229, 0.224, 0.225]
-
-    # must match your dataset's category_id.
-    # category_id is one_indexed,
-    # for example, index of 'car' here is 2, while category_id of is 3
-    obj_list = ['person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus', 'train', 'truck', 'boat', 'traffic light',
-                'fire hydrant', '', 'stop sign', 'parking meter', 'bench', 'bird', 'cat', 'dog', 'horse', 'sheep',
-                'cow', 'elephant', 'bear', 'zebra', 'giraffe', '', 'backpack', 'umbrella', '', '', 'handbag', 'tie',
-                'suitcase', 'frisbee', 'skis', 'snowboard', 'sports ball', 'kite', 'baseball bat', 'baseball glove',
-                'skateboard', 'surfboard', 'tennis racket', 'bottle', '', 'wine glass', 'cup', 'fork', 'knife', 'spoon',
-                'bowl', 'banana', 'apple', 'sandwich', 'orange', 'broccoli', 'carrot', 'hot dog', 'pizza', 'donut',
-                'cake', 'chair', 'couch', 'potted plant', 'bed', '', 'dining table', '', '', 'toilet', '', 'tv',
-                'laptop', 'mouse', 'remote', 'keyboard', 'cell phone', 'microwave', 'oven', 'toaster', 'sink',
-                'refrigerator', '', 'book', 'clock', 'vase', 'scissors', 'teddy bear', 'hair drier',
-                'toothbrush']
+    def __getattr__(self, item):
+        return self.params[item]
 
 
 def get_args():
     parser = argparse.ArgumentParser('Yet Another EfficientDet Pytorch: SOTA object detection network - Zylo117')
+    parser.add_argument('-p', '--project', type=str, default='coco', help='project file that contains parameters')
     parser.add_argument('-c', '--compound_coef', type=int, default=0, help='coefficients of efficientdet')
     parser.add_argument('-n', '--num_workers', type=int, default=12, help='num_workers of dataloader')
     parser.add_argument('--batch_size', type=int, default=12, help='The number of images per batch among all devices')
@@ -90,7 +59,7 @@ def get_args():
 
 
 def train(opt):
-    params = Params()
+    params = Params(f'projects/{opt.project}.yml')
 
     if params.num_gpus == 0:
         os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
@@ -203,7 +172,8 @@ def train(opt):
                     _, regression, classification, anchors = model(imgs)
 
                     cls_loss, reg_loss = criterion(classification, regression, anchors, annot,
-                                                   imgs=imgs, obj_list=params.obj_list)
+                                                   # imgs=imgs, obj_list=params.obj_list  # uncomment this to debug
+                                                   )
 
                     loss = cls_loss + reg_loss
                     if loss == 0 or not torch.isfinite(loss):

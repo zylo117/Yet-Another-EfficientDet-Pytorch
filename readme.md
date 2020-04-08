@@ -18,6 +18,152 @@ The performance is at most 1.5% lower than the paper's, is close enough.
 | D6 | soon | pending | soon | 51.7
 | D7 | soon | pending | soon | 52.2
 
+___
+# Update log
+
+[2020-04-08] add training script and its doc.
+
+[2020-04-08] update eval script and simple inference script.
+
+[2020-04-07] tested D0-D5 mAP, result seems nice. details can be found [here](benchmark/coco_eval_result)
+
+[2020-04-07] fix anchors strategies, please pull the latest code to apply the fix.
+
+[2020-04-06] adapt anchor strategies
+
+[2020-04-05] finished re-implement efficientdet
+ 
+# Demo
+
+    # install requirements
+    pip install pycocotools numpy opencv-python tqdm tensorboard tensorboardX pyyaml
+    pip install torch==1.4.0
+    pip install torchvision==0.5.0
+     
+    # run the simple inference script
+    python efficientdet_test.py
+
+# Training
+
+## 1. Prepare your dataset
+
+    # your dataset structure should be like this
+    datasets/
+        -your_project_name/
+            -train_set_name/
+                -*.jpg
+            -val_set_name/
+                -*.jpg
+            -annotations
+                -instances_{train_set_name}.json
+                -instances_{val_set_name}.json
+    
+    # for example, coco2017
+    datasets/
+        -coco2017/
+            -train2017/
+                -000000000001.jpg
+                -000000000002.jpg
+                -000000000003.jpg
+            -val2017/
+                -000000000004.jpg
+                -000000000005.jpg
+                -000000000006.jpg
+            -annotations
+                -instances_train2017.json
+                -instances_val2017.json
+
+
+## 2. Manual set project's specific parameters
+
+     # create a yml file {your_project_name}.yml under 'projects'folder 
+     # modify it following 'coco.yml'
+     
+     # for example
+     project_name: coco
+    train_set: train2017
+    val_set: val2017
+    num_gpus: 4  # 0 means using cpu, 1-N means using gpus 
+    
+    # mean and std in RGB order, actually this part should remains unchanged as long as your dataset comes from daily life.
+    mean: [0.485, 0.456, 0.406]
+    std: [0.229, 0.224, 0.225]
+    
+    # objects from all labels from your dataset with the order from your annotations.
+    # its index must match your dataset's category_id.
+    # category_id is one_indexed,
+    # for example, index of 'car' here is 2, while category_id of is 3
+    obj_list: ['person', 'bicycle', 'car', ...]
+
+
+## 3. Train on coco from scratch
+
+    # train efficientdet-d0 on coco from scratch 
+    # with batchsize 12
+    # This takes time and requires change 
+    # of hyperparameters every few hours.
+    # If you have months to kill, do it. 
+    # It's not like someone going to achieve
+    # better score than the one in the paper.
+    # The first few epoches will be rather unstable,
+    # it's quite normal when you train from scratch.
+    
+    python train.py -c 0 --batchsize 12
+    
+## 4. Train a custom dataset from scratch.
+    
+    # train efficientdet-d1 on a custom dataset 
+    # with batchsize 8 and learning rate 1e-5
+    
+    python train.py -c 1 --batchsize 8 --lr 1e-5
+    
+## 5. Train a custom dataset with pretrained weights (Recommended)
+
+    # train efficientdet-d2 on a custom dataset with pretrained weights
+    # with batchsize 8 and learning rate 1e-5 for 10 epoches
+    
+    python train.py -c 2 --batchsize 8 --lr 1e-5 --num_epochs 10 \
+     --load_weights /path/to/your/weights/efficientdet-d2.pth
+    
+    # with a coco-pretrained, you can even freeze the backbone and train heads only
+    # to speed up training and help convergence.
+    python train.py -c 2 --batchsize 8 --lr 1e-5 --num_epochs 10 \
+     --load_weights /path/to/your/weights/efficientdet-d2.pth \
+     --head_only True
+     
+## 6. Early stopping a training session
+    
+    # while training, press Ctrl+c, the program will catch KeyboardInterrupt
+    # and stop training, save current checkpoint.
+    
+## 7. Resume training
+
+    # let says you started a training session like this.
+    python train.py -c 2 --batchsize 8 --lr 1e-5 \
+     --load_weights /path/to/your/weights/efficientdet-d2.pth \
+     --head_only True
+     
+    # then you stop it with a Ctrl+c, it exit with a checkpoint
+    
+    # now you want to resume training from the last checkpoint
+    # simply set load_weights to 'last'
+    python train.py -c 2 --batchsize 8 --lr 1e-5 \
+     --load_weights last \
+     --head_only True
+
+# TODO
+
+- [X] re-implement efficientdet
+- [X] adapt anchor strategies
+- [X] mAP tests
+- [X] training-scripts
+- [ ] tensorflow's consistency tuning with pytorch. 
+- [ ] efficientdet D6/D7 supports (this should be very easy)
+- [ ] onnx support
+- [ ] float16 mode
+- [ ] float16 mode mAP tests
+- [ ] tensorRT/TVM support
+- [ ] re-implement tensorflow's weird bilinear interpolation algorithm in python, then cython.
 
 # FAQ:
 
@@ -92,43 +238,6 @@ Btw, debugging static-graph TensorFlow v1 is really painful. Don't try to export
 
 And even if you succeeded, like I did, you will have to deal with the crazy messed up machine-generated code under the same class that takes more time to refactor than translating it from scratch.
 
-___
-# Update log
-
-[2020-04-08] update coco eval script and simple inference script.
-
-[2020-04-07] tested D0-D5 mAP, result seems nice. details can be found [here](benchmark/coco_eval_result)
-
-[2020-04-07] fix anchors strategies, please pull the latest code to apply the fix.
-
-[2020-04-06] adapt anchor strategies
-
-[2020-04-05] finished re-implement efficientdet
- 
-# Demo
-
-    # install requirements
-    pip install pycocotools numpy opencv-python tqdm tensorboard tensorboardX
-    pip install torch==1.4.0
-    pip install torchvision==0.5.0
-     
-    # run the simple inference script
-    python efficientdet_test.py
-    
-# TODO
-
-- [X] re-implement efficientdet
-- [X] adapt anchor strategies
-- [X] mAP tests
-- [ ] training-scripts
-- [ ] tensorflow's consistency tuning with pytorch. 
-- [ ] efficientdet D6/D7 supports (this should be very easy)
-- [ ] onnx support
-- [ ] float16 mode
-- [ ] float16 mode mAP tests
-- [ ] tensorRT/TVM support
-- [ ] re-implement tensorflow's weird bilinear interpolation algorithm in python, then cython.
-    
 # Known issues
 
 1. Official EfficientDet use TensorFlow bilinear interpolation to resize image inputs, while it is different from many other methods (opencv/pytorch), so the output is definitely slightly different from the official one. But when I copy the input that generated by TensorFlow bilinear interpolation, the result is still slightly different. I will test mAP later, if this cause performance loss, either finetune the model, or figure out the divergence and fix it. But the benchmark uphere is tested when images are interpolated by opencv's bilinear algorithm, and the result seems nice.
