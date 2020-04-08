@@ -55,7 +55,7 @@ class BiFPN(nn.Module):
     """
     modified by Zylo117
     """
-    def __init__(self, num_channels, conv_channels, first_time=False, epsilon=1e-4, onnx_export=False):
+    def __init__(self, num_channels, conv_channels, first_time=False, epsilon=1e-4, onnx_export=False, attention=True):
         """
 
         Args:
@@ -142,6 +142,17 @@ class BiFPN(nn.Module):
         self.p6_w2_relu = nn.ReLU()
         self.p7_w2 = nn.Parameter(torch.ones(2, dtype=torch.float32), requires_grad=True)
         self.p7_w2_relu = nn.ReLU()
+
+
+        if not attention:
+            self.p6_w1.requires_grad = False
+            self.p5_w1.requires_grad = False
+            self.p4_w1.requires_grad = False
+            self.p3_w1.requires_grad = False
+            self.p4_w2.requires_grad = False
+            self.p5_w2.requires_grad = False
+            self.p6_w2.requires_grad = False
+            self.p7_w2.requires_grad = False
 
     def forward(self, inputs):
         """

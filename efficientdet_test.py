@@ -34,7 +34,8 @@ obj_list = ['person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus', 'train'
             'toothbrush']
 
 # tf bilinear interpolation is different from any other's, just make do
-input_size = 512 + compound_coef * 128 if force_input_size is None else force_input_size
+input_sizes = [512, 640, 768, 896, 1024, 1280, 1280, 1536]
+input_size = input_sizes[compound_coef] if force_input_size is None else force_input_size
 ori_imgs, framed_imgs, framed_metas = preprocess(img_path, max_size=input_size)
 x = torch.tensor(framed_imgs).cuda()
 

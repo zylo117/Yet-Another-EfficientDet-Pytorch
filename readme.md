@@ -76,11 +76,11 @@ ___
 
 ## 2. Manual set project's specific parameters
 
-     # create a yml file {your_project_name}.yml under 'projects'folder 
-     # modify it following 'coco.yml'
+    # create a yml file {your_project_name}.yml under 'projects'folder 
+    # modify it following 'coco.yml'
      
-     # for example
-     project_name: coco
+    # for example
+    project_name: coco
     train_set: train2017
     val_set: val2017
     num_gpus: 4  # 0 means using cpu, 1-N means using gpus 

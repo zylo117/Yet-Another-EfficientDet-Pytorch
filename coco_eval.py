@@ -23,7 +23,7 @@ from backbone import EfficientDetBackbone
 from efficientdet.utils import BBoxTransform, ClipBoxes
 from utils.utils import preprocess, invert_affine, postprocess
 
-compound_coef = 0
+compound_coef = 6
 nms_threshold = 0.5
 use_cuda = True
 project_name = 'coco'
@@ -32,7 +32,7 @@ weights_path = f'weights/efficientdet-d{compound_coef}.pth'
 params = yaml.safe_load(open(f'projects/{project_name}.yml'))
 obj_list = params['obj_list']
 
-
+input_sizes = [512, 640, 768, 896, 1024, 1280, 1280, 1536]
 def evaluate_coco(img_path, set_name, image_ids, coco, model, threshold=0.05):
     results = []
     processed_image_ids = []
@@ -44,7 +44,7 @@ def evaluate_coco(img_path, set_name, image_ids, coco, model, threshold=0.05):
         image_info = coco.loadImgs(image_id)[0]
         image_path = img_path + image_info['file_name']
 
-        ori_imgs, framed_imgs, framed_metas = preprocess(image_path, max_size=512 + compound_coef * 128)
+        ori_imgs, framed_imgs, framed_metas = preprocess(image_path, max_size=input_sizes[compound_coef])
         x = torch.from_numpy(framed_imgs[0]).cuda().unsqueeze(0).to(torch.float32).permute(0, 3, 1, 2)
         features, regression, classification, anchors = model(x)
 

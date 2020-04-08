@@ -22,14 +22,14 @@ class EfficientDetBackbone(nn.Module):
         self.aspect_ratios = [(1.0, 1.0), (1.4, 0.7), (0.7, 1.4)]
         self.num_scales = 3
         conv_channel_coef = {
-            # TODO: I have only tested on D0~5, if you want to try it on other coefficients,
-            #  fill it in with the channels of P3/P4/P5 like this.
+            # the channels of P3/P4/P5.
             0: [40, 112, 320],
             1: [40, 112, 320],
             2: [48, 120, 352],
             3: [48, 136, 384],
             4: [56, 160, 448],
             5: [64, 176, 512],
+            6: [72, 200, 576],
         }
 
         num_anchors = len(self.aspect_ratios) * self.num_scales
@@ -37,7 +37,9 @@ class EfficientDetBackbone(nn.Module):
         self.bifpn = nn.Sequential(
             *[BiFPN(self.fpn_num_filters[self.compound_coef],
                     conv_channel_coef[compound_coef],
-                    True if _ == 0 else False) for _ in range(self.fpn_cell_repeats[compound_coef])])
+                    True if _ == 0 else False,
+                    attention=True if compound_coef < 6 else False)
+              for _ in range(self.fpn_cell_repeats[compound_coef])])
 
         self.num_classes = num_classes
         self.regressor = Regressor(in_channels=self.fpn_num_filters[self.compound_coef], num_anchors=num_anchors,

@@ -86,15 +86,16 @@ def train(opt):
                   'collate_fn': collater,
                   'num_workers': opt.num_workers}
 
+    input_sizes = [512, 640, 768, 896, 1024, 1280, 1280, 1536]
     training_set = CocoDataset(root_dir=opt.data_path + params.project_name, set=params.train_set,
                                transform=transforms.Compose([Normalizer(mean=params.mean, std=params.std),
                                                              Augmenter(),
-                                                             Resizer(512 + opt.compound_coef * 128)]))
+                                                             Resizer(input_sizes[opt.compound_coef])]))
     training_generator = DataLoader(training_set, **training_params)
 
     val_set = CocoDataset(root_dir=opt.data_path + params.project_name, set=params.val_set,
                           transform=transforms.Compose([Normalizer(mean=params.mean, std=params.std),
-                                                        Resizer(512 + opt.compound_coef * 128)]))
+                                                        Resizer(input_sizes[opt.compound_coef])]))
     val_generator = DataLoader(val_set, **val_params)
 
     model = EfficientDetBackbone(num_anchors=9, num_classes=len(params.obj_list), compound_coef=opt.compound_coef)
