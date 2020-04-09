@@ -21,6 +21,8 @@ The performance is a little bit lower than the paper's, yet it is still SOTA.
 ___
 # Update log
 
+[2020-04-08] add D6 support and test its mAP
+
 [2020-04-08] add training script and its doc; update eval script and simple inference script.
 
 [2020-04-07] tested D0-D5 mAP, result seems nice, details can be found [here](benchmark/coco_eval_result)
