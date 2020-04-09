@@ -85,7 +85,7 @@ ___
     val_set: val2017
     num_gpus: 4  # 0 means using cpu, 1-N means using gpus 
     
-    # mean and std in RGB order, actually this part should remains unchanged as long as your dataset comes from daily life.
+    # mean and std in RGB order, actually this part should remain unchanged as long as your dataset is similar to coco.
     mean: [0.485, 0.456, 0.406]
     std: [0.229, 0.224, 0.225]
     

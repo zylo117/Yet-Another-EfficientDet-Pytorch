@@ -143,21 +143,24 @@ def train(opt):
 
     if params.num_gpus > 0:
         model = model.cuda()
-        model = CustomDataParallel(model, params.num_gpus)
+        if params.num_gpus > 1:
+            model = CustomDataParallel(model, params.num_gpus)
 
     optimizer = torch.optim.AdamW(model.parameters(), opt.lr)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, patience=3, verbose=True)
 
     criterion = FocalLoss()
 
+    epoch = 0
     best_loss = 1e5
     best_epoch = 0
     step = max(0, last_step)
     model.train()
 
     num_iter_per_epoch = len(training_generator)
-    for epoch in range(opt.num_epochs):
-        try:
+
+    try:
+        for epoch in range(opt.num_epochs):
             model.train()
             epoch_loss = []
             progress_bar = tqdm(training_generator)
@@ -168,6 +171,11 @@ def train(opt):
 
                     if params.num_gpus > 0:
                         annot = annot.cuda()
+
+                    if params.num_gpus == 1:
+                        # if only one gpu, just send it to cuda:0
+                        # elif multiple gpus, send it to multiple gpu in CustomDataParallel, not here
+                        imgs = imgs.cuda()
 
                     optimizer.zero_grad()
                     _, regression, classification, anchors = model(imgs)
@@ -271,8 +279,9 @@ def train(opt):
                     print('Stop training at epoch {}. The lowest loss achieved is {}'.format(epoch, loss))
                     break
             writer.close()
-        except KeyboardInterrupt:
-            save_checkpoint(model, f'efficientdet-d{opt.compound_coef}_{epoch}_{step}.pth')
+    except KeyboardInterrupt:
+        save_checkpoint(model, f'efficientdet-d{opt.compound_coef}_{epoch}_{step}.pth')
+        writer.close()
 
 
 def save_checkpoint(model, name):
