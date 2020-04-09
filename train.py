@@ -288,10 +288,10 @@ def train(opt):
                 if epoch - best_epoch > opt.es_patience > 0:
                     print('[Info] Stop training at epoch {}. The lowest loss achieved is {}'.format(epoch, loss))
                     break
-            writer.close()
     except KeyboardInterrupt:
         save_checkpoint(model, f'efficientdet-d{opt.compound_coef}_{epoch}_{step}.pth')
         writer.close()
+    writer.close()
 
 
 def save_checkpoint(model, name):
