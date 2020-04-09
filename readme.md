@@ -96,7 +96,7 @@ ___
     obj_list: ['person', 'bicycle', 'car', ...]
 
 
-## 3. Train on coco from scratch
+## 3.a. Train on coco from scratch
 
     # train efficientdet-d0 on coco from scratch 
     # with batchsize 12
@@ -110,14 +110,14 @@ ___
     
     python train.py -c 0 --batchsize 12
     
-## 4. Train a custom dataset from scratch.
+## 3.b. Train a custom dataset from scratch.
     
     # train efficientdet-d1 on a custom dataset 
     # with batchsize 8 and learning rate 1e-5
     
     python train.py -c 1 --batchsize 8 --lr 1e-5
     
-## 5. Train a custom dataset with pretrained weights (Recommended)
+## 3.c. Train a custom dataset with pretrained weights (Highly Recommended)
 
     # train efficientdet-d2 on a custom dataset with pretrained weights
     # with batchsize 8 and learning rate 1e-5 for 10 epoches
@@ -131,12 +131,12 @@ ___
      --load_weights /path/to/your/weights/efficientdet-d2.pth \
      --head_only True
      
-## 6. Early stopping a training session
+## 4. Early stopping a training session
     
     # while training, press Ctrl+c, the program will catch KeyboardInterrupt
     # and stop training, save current checkpoint.
     
-## 7. Resume training
+## 5. Resume training
 
     # let says you started a training session like this.
     python train.py -c 2 --batchsize 8 --lr 1e-5 \
@@ -150,6 +150,13 @@ ___
     python train.py -c 2 --batchsize 8 --lr 1e-5 \
      --load_weights last \
      --head_only True
+
+## 6. Evaluate model performance
+
+    # eval on your_project, efficientdet-d5
+    python coco_eval.py -p your_project_name -c 5 \
+     -w /path/to/your/weights
+    
 
 # TODO
 

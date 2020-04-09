@@ -174,7 +174,7 @@ def train(opt):
 
                     if params.num_gpus == 1:
                         # if only one gpu, just send it to cuda:0
-                        # elif multiple gpus, send it to multiple gpu in CustomDataParallel, not here
+                        # elif multiple gpus, send it to multiple gpus in CustomDataParallel, not here
                         imgs = imgs.cuda()
 
                     optimizer.zero_grad()

@@ -13,6 +13,7 @@ change compound_coef
 import json
 import os
 
+import argparse
 import torch
 import yaml
 from tqdm import tqdm
@@ -23,16 +24,28 @@ from backbone import EfficientDetBackbone
 from efficientdet.utils import BBoxTransform, ClipBoxes
 from utils.utils import preprocess, invert_affine, postprocess
 
-compound_coef = 6
-nms_threshold = 0.5
-use_cuda = True
-project_name = 'coco'
-weights_path = f'weights/efficientdet-d{compound_coef}.pth'
+ap = argparse.ArgumentParser()
+ap.add_argument('-p', '--project', type=str, default='coco', help='project file that contains parameters')
+ap.add_argument('-c', '--compound_coef', type=int, default=0, help='coefficients of efficientdet')
+ap.add_argument('-w', '--weights', type=str, default=None, help='/path/to/weights')
+ap.add_argument('--nms_threshold', type=float, default=0.5, help='nms threshold, don\'t change it if not for testing purposes')
+ap.add_argument('--cuda', type=bool, default=True)
+args = ap.parse_args()
+
+compound_coef = args.compound_coef
+nms_threshold = args.nms_threshold
+use_cuda = args.cuda
+project_name = args.project
+weights_path = f'weights/efficientdet-d{compound_coef}.pth' if args.weights is None else args.weights
+
+print(f'running coco-style evaluation on project {project_name}, weights {weights_path}...')
 
 params = yaml.safe_load(open(f'projects/{project_name}.yml'))
 obj_list = params['obj_list']
 
 input_sizes = [512, 640, 768, 896, 1024, 1280, 1280, 1536]
+
+
 def evaluate_coco(img_path, set_name, image_ids, coco, model, threshold=0.05):
     results = []
     processed_image_ids = []
@@ -88,7 +101,7 @@ def evaluate_coco(img_path, set_name, image_ids, coco, model, threshold=0.05):
                 results.append(image_result)
 
     if not len(results):
-        return []
+        raise Exception('the model does not provide any valid output, check model architecture and the data input')
 
     # write output
     json.dump(results, open(f'{set_name}_bbox_results.json', 'w'), indent=4)
