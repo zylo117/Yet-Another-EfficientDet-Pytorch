@@ -5,7 +5,7 @@ The pytorch re-implement of the official [EfficientDet](https://github.com/googl
 
 # Pretrained weights and performance
 
-The performance is at most 1.5% lower than the paper's, is still SOTA. 
+The performance is a little bit lower than the paper's, yet it is still SOTA. 
 
 | coefficient | pth_download | onnx_download | mAP 0.5:0.95(this repo) | mAP 0.5:0.95(paper) |
 | :----------: | :--------: | :-----------: | :--------: | :-----: |
@@ -15,7 +15,7 @@ The performance is at most 1.5% lower than the paper's, is still SOTA.
 | D3 | [efficientdet-d3.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d3.pth) | pending | 44.9 | 45.8
 | D4 | [efficientdet-d4.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d4.pth) | pending | 48.1 | 49.4
 | D5 | [efficientdet-d5.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d5.pth) | pending | 49.5 | 50.7
-| D6 | soon | pending | soon | 51.7
+| D6 | [efficientdet-d6.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d6.pth) | pending | 50.1 | 51.7
 | D7 | soon | pending | soon | 52.2
 
 ___
@@ -167,7 +167,8 @@ ___
 - [X] mAP tests
 - [X] training-scripts
 - [ ] tensorflow's consistency tuning with pytorch. 
-- [ ] efficientdet D6/D7 supports (this should be very easy)
+- [X] efficientdet D6 supports
+- [ ] efficientdet D7 supports
 - [ ] onnx support
 - [ ] float16 mode
 - [ ] float16 mode mAP tests
@@ -182,7 +183,7 @@ A1: Because AFAIK none of them fully recovers the true algorithm of the official
 
 **Q2: What exactly is the difference among this repository and the others?**
 
-A2: For example, this two are the most popular efficientdet-pytorch,
+A2: For example, these two are the most popular efficientdet-pytorch,
 
 https://github.com/toandaominh1997/EfficientDet.Pytorch
 
@@ -253,11 +254,9 @@ And even if you succeeded, like I did, you will have to deal with the crazy mess
 
 2. D6/D7 BiFPN use unweighted sum for training stability, I'm working a fix to adapt to D6/D7.
     
-# Comparison
+# Visual Comparison
 
-Conclusion: They are almost the same. Believe it or not, you can check the tensor output, the difference is within 1e-3. 
-
-I wonder where does this difference come from, and I'd like some help too.
+Conclusion: They are providing almost the same precision.
 
 ## This Repo
 <img src="https://raw.githubusercontent.com/zylo117/Yet-Another-Efficient-Pytorch/master/test/img_inferred_d0_this_repo.jpg" width="640">
