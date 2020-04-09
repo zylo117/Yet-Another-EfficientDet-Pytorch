@@ -234,6 +234,10 @@ def train(opt):
 
                         if params.num_gpus > 0:
                             annot = annot.cuda()
+
+                        if params.num_gpus == 1:
+                            imgs = imgs.cuda()
+
                         _, regression, classification, anchors = model(imgs)
                         cls_loss, reg_loss = criterion(classification, regression, anchors, annot)
 
