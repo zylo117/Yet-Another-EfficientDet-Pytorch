@@ -5,9 +5,9 @@ The pytorch re-implement of the official [EfficientDet](https://github.com/googl
 
 # Pretrained weights and performance
 
-The performance is at most 1.5% lower than the paper's, is close enough. 
+The performance is at most 1.5% lower than the paper's, is still SOTA. 
 
-| coefficient | pth_download | onnx_download | mAP 0.5:0.95(This Repo) | mAP 0.5:0.95(paper) |
+| coefficient | pth_download | onnx_download | mAP 0.5:0.95(this repo) | mAP 0.5:0.95(paper) |
 | :----------: | :--------: | :-----------: | :--------: | :-----: |
 | D0 | [efficientdet-d0.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d0.pth) | pending | 32.6 | 33.8
 | D1 | [efficientdet-d1.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d1.pth) | pending | 38.2 | 39.6
@@ -21,17 +21,15 @@ The performance is at most 1.5% lower than the paper's, is close enough.
 ___
 # Update log
 
-[2020-04-08] add training script and its doc.
+[2020-04-08] add training script and its doc; update eval script and simple inference script.
 
-[2020-04-08] update eval script and simple inference script.
+[2020-04-07] tested D0-D5 mAP, result seems nice, details can be found [here](benchmark/coco_eval_result)
 
-[2020-04-07] tested D0-D5 mAP, result seems nice. details can be found [here](benchmark/coco_eval_result)
+[2020-04-07] fix anchors strategies.
 
-[2020-04-07] fix anchors strategies, please pull the latest code to apply the fix.
+[2020-04-06] adapt anchor strategies.
 
-[2020-04-06] adapt anchor strategies
-
-[2020-04-05] finished re-implement efficientdet
+[2020-04-05] finished re-implement efficientdet.
  
 # Demo
 
@@ -110,7 +108,7 @@ ___
     
     python train.py -c 0 --batchsize 12
     
-## 3.b. Train a custom dataset from scratch.
+## 3.b. Train a custom dataset from scratch
     
     # train efficientdet-d1 on a custom dataset 
     # with batchsize 8 and learning rate 1e-5
@@ -143,7 +141,7 @@ ___
      --load_weights /path/to/your/weights/efficientdet-d2.pth \
      --head_only True
      
-    # then you stop it with a Ctrl+c, it exit with a checkpoint
+    # then you stopped it with a Ctrl+c, it exited with a checkpoint
     
     # now you want to resume training from the last checkpoint
     # simply set load_weights to 'last'
