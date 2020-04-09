@@ -125,6 +125,7 @@ ___
     
     # with a coco-pretrained, you can even freeze the backbone and train heads only
     # to speed up training and help convergence.
+    
     python train.py -c 2 --batchsize 8 --lr 1e-5 --num_epochs 10 \
      --load_weights /path/to/your/weights/efficientdet-d2.pth \
      --head_only True
@@ -137,6 +138,7 @@ ___
 ## 5. Resume training
 
     # let says you started a training session like this.
+    
     python train.py -c 2 --batchsize 8 --lr 1e-5 \
      --load_weights /path/to/your/weights/efficientdet-d2.pth \
      --head_only True
@@ -145,6 +147,7 @@ ___
     
     # now you want to resume training from the last checkpoint
     # simply set load_weights to 'last'
+    
     python train.py -c 2 --batchsize 8 --lr 1e-5 \
      --load_weights last \
      --head_only True
@@ -152,6 +155,7 @@ ___
 ## 6. Evaluate model performance
 
     # eval on your_project, efficientdet-d5
+    
     python coco_eval.py -p your_project_name -c 5 \
      -w /path/to/your/weights
     
@@ -260,6 +264,13 @@ I wonder where does this difference come from, and I'd like some help too.
 
 ## Official EfficientDet
 <img src="https://raw.githubusercontent.com/zylo117/Yet-Another-Efficient-Pytorch/master/test/img_inferred_d0_official.jpg" width="640">
+
+## References
+
+Appreciate the great work from the following repositories:
+- [google/automl](https://github.com/google/automl)
+- [lukemelas/EfficientNet-PyTorch](https://github.com/lukemelas/EfficientNet-PyTorch)
+- [signatrix/efficientdet](https://github.com/signatrix/efficientdet)
 
 ## Donation
 
