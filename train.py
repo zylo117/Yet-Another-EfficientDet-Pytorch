@@ -110,11 +110,17 @@ def train(opt):
             last_step = int(os.path.basename(weights_path).split('_')[-1].split('.')[0])
         except:
             last_step = 0
-        model.load_state_dict(torch.load(weights_path))
-        print(f'loaded weights: {os.path.basename(weights_path)}, resuming checkpoint from step: {last_step}')
+
+        try:
+            ret = model.load_state_dict(torch.load(weights_path), strict=False)
+        except RuntimeError as e:
+            print(f'[Warning] Ignoring {e}')
+            print('[Warning] Don\'t panic if you see this, this might be because you load a pretrained weights with different number of classes. The rest of the weights should be loaded already.')
+
+        print(f'[Info] loaded weights: {os.path.basename(weights_path)}, resuming checkpoint from step: {last_step}')
     else:
         last_step = 0
-        print('initializing weights...')
+        print('[Info] initializing weights...')
         init_weights(model)
 
     # freeze backbone if train head_only
@@ -127,7 +133,7 @@ def train(opt):
                         param.requires_grad = False
 
         model.apply(freeze_backbone)
-        print('freezed backbone')
+        print('[Info] freezed backbone')
 
     # https://github.com/vacancy/Synchronized-BatchNorm-PyTorch
     # apply sync_bn when using multiple gpu and batch_size per gpu is lower than 4
@@ -209,7 +215,7 @@ def train(opt):
                     step += 1
 
                 except Exception as e:
-                    print(traceback.format_exc())
+                    print('[Error]', traceback.format_exc())
                     print(e)
                     continue
             scheduler.step(np.mean(epoch_loss))
@@ -276,7 +282,7 @@ def train(opt):
 
                 # Early stopping
                 if epoch - best_epoch > opt.es_patience > 0:
-                    print('Stop training at epoch {}. The lowest loss achieved is {}'.format(epoch, loss))
+                    print('[Info] Stop training at epoch {}. The lowest loss achieved is {}'.format(epoch, loss))
                     break
             writer.close()
     except KeyboardInterrupt:
