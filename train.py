@@ -99,7 +99,7 @@ def train(opt):
     val_generator = DataLoader(val_set, **val_params)
 
     model = EfficientDetBackbone(num_classes=len(params.obj_list), compound_coef=opt.compound_coef,
-                                 ratios=params.anchors_ratios, scales=params.anchors_scales)
+                                 ratios=eval(params.anchors_ratios), scales=eval(params.anchors_scales))
 
     # load last weights
     if opt.load_weights is not None:
@@ -188,7 +188,7 @@ def train(opt):
                     _, regression, classification, anchors = model(imgs)
 
                     cls_loss, reg_loss = criterion(classification, regression, anchors, annot,
-                                                   # imgs=imgs, obj_list=params.obj_list  # uncomment this to debug
+                                                   imgs=imgs, obj_list=params.obj_list  # uncomment this to debug
                                                    )
 
                     loss = cls_loss + reg_loss

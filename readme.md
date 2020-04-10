@@ -21,6 +21,8 @@ The performance is a little bit lower than the paper's, yet it is still SOTA.
 ___
 # Update log
 
+[2020-04-09] allow custom anchor scales and ratios
+
 [2020-04-08] add D6 support and test its mAP
 
 [2020-04-08] add training script and its doc; update eval script and simple inference script.
@@ -90,8 +92,8 @@ ___
     std: [0.229, 0.224, 0.225]
     
     # this is coco anchors, change it if necessary
-    anchors_scales: [2 ** 0, 2 ** (1.0 / 3.0), 2 ** (2.0 / 3.0)]
-    anchors_ratios: [(1.0, 1.0), (1.4, 0.7), (0.7, 1.4)]
+    anchors_scales: '[2 ** 0, 2 ** (1.0 / 3.0), 2 ** (2.0 / 3.0)]'
+    anchors_ratios: '[(1.0, 1.0), (1.4, 0.7), (0.7, 1.4)]'
     
     # objects from all labels from your dataset with the order from your annotations.
     # its index must match your dataset's category_id.
