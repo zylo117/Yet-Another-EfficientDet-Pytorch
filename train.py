@@ -218,14 +218,15 @@ def train(opt):
 
                     step += 1
 
+                    if step % opt.save_interval == 0 and step > 0:
+                        save_checkpoint(model, f'efficientdet-d{opt.compound_coef}_{epoch}_{step}.pth')
+                        print('checkpoint...')
+
                 except Exception as e:
                     print('[Error]', traceback.format_exc())
                     print(e)
                     continue
             scheduler.step(np.mean(epoch_loss))
-
-            if step % opt.save_interval == 0 and step > 0:
-                save_checkpoint(model, f'efficientdet-d{opt.compound_coef}_{epoch}_{step}.pth')
 
             if epoch % opt.val_interval == 0:
                 model.eval()
