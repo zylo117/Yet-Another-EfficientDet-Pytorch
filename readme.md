@@ -9,16 +9,16 @@ The pytorch re-implement of the official [EfficientDet](https://github.com/googl
 
 The performance is very close to the paper's, it is still SOTA. 
 
-| coefficient | pth_download | onnx_download | mAP 0.5:0.95(this repo) | mAP 0.5:0.95(paper) |
-| :----------: | :--------: | :-----------: | :--------: | :-----: |
-| D0 | [efficientdet-d0.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d0.pth) | pending | 32.6 | 33.8
-| D1 | [efficientdet-d1.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d1.pth) | pending | 38.2 | 39.6
-| D2 | [efficientdet-d2.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d2.pth) | pending | 41.5 | 43.0
-| D3 | [efficientdet-d3.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d3.pth) | pending | 44.9 | 45.8
-| D4 | [efficientdet-d4.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d4.pth) | pending | 48.1 | 49.4
-| D5 | [efficientdet-d5.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d5.pth) | pending | 49.5 | 50.7
-| D6 | [efficientdet-d6.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d6.pth) | pending | 50.1 | 51.7
-| D7 | soon | pending | soon | 52.2
+| coefficient | pth_download | onnx_download | FPS | mAP 0.5:0.95(this repo) | mAP 0.5:0.95(paper) |
+| :----------: | :--------: | :-----------: | :--------: | :--------: | :-----: |
+| D0 | [efficientdet-d0.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d0.pth) | pending | 35.13 | 32.6 | 33.8
+| D1 | [efficientdet-d1.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d1.pth) | pending | 27.34 | 38.2 | 39.6
+| D2 | [efficientdet-d2.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d2.pth) | pending | 25.24 | 41.5 | 43.0
+| D3 | [efficientdet-d3.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d3.pth) | pending | 21.94 | 44.9 | 45.8
+| D4 | [efficientdet-d4.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d4.pth) | pending | 14.27 | 48.1 | 49.4
+| D5 | [efficientdet-d5.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d5.pth) | pending | 6.93 |49.5 | 50.7
+| D6 | [efficientdet-d6.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d6.pth) | pending | 5.16 | 50.1 | 51.7
+| D7 | soon | pending |  | soon | 52.2
 
 
 ## Speed Test

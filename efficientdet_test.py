@@ -15,7 +15,7 @@ from efficientdet.utils import BBoxTransform, ClipBoxes
 from utils.utils import preprocess, invert_affine, postprocess
 
 compound_coef = 0
-force_input_size = 512  # set None to use default size
+force_input_size = None  # set None to use default size
 img_path = 'test/img.png'
 
 threshold = 0.2
@@ -91,7 +91,7 @@ def display(preds, imgs, imshow=True, imwrite=False):
 
 
 out = invert_affine(framed_metas, out)
-# display(out, ori_imgs, imwrite=True)
+display(out, ori_imgs, imshow=False, imwrite=True)
 
 print('running speed test...')
 print('inferring image for 10 times...')
