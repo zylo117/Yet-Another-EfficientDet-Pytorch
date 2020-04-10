@@ -188,7 +188,7 @@ def train(opt):
                     _, regression, classification, anchors = model(imgs)
 
                     cls_loss, reg_loss = criterion(classification, regression, anchors, annot,
-                                                   imgs=imgs, obj_list=params.obj_list  # uncomment this to debug
+                                                   # imgs=imgs, obj_list=params.obj_list  # uncomment this to debug
                                                    )
 
                     loss = cls_loss + reg_loss

@@ -30,11 +30,13 @@ ap.add_argument('-c', '--compound_coef', type=int, default=0, help='coefficients
 ap.add_argument('-w', '--weights', type=str, default=None, help='/path/to/weights')
 ap.add_argument('--nms_threshold', type=float, default=0.5, help='nms threshold, don\'t change it if not for testing purposes')
 ap.add_argument('--cuda', type=bool, default=True)
+ap.add_argument('--float16', type=bool, default=False)
 args = ap.parse_args()
 
 compound_coef = args.compound_coef
 nms_threshold = args.nms_threshold
 use_cuda = args.cuda
+use_float16 = args.float16
 project_name = args.project
 weights_path = f'weights/efficientdet-d{compound_coef}.pth' if args.weights is None else args.weights
 
@@ -58,7 +60,18 @@ def evaluate_coco(img_path, set_name, image_ids, coco, model, threshold=0.05):
         image_path = img_path + image_info['file_name']
 
         ori_imgs, framed_imgs, framed_metas = preprocess(image_path, max_size=input_sizes[compound_coef])
-        x = torch.from_numpy(framed_imgs[0]).cuda().unsqueeze(0).to(torch.float32).permute(0, 3, 1, 2)
+        x = torch.from_numpy(framed_imgs[0])
+
+        if use_cuda:
+            x = x.cuda()
+            if use_float16:
+                x = x.half()
+            else:
+                x = x.float()
+        else:
+            x = x.float()
+
+        x = x.unsqueeze(0).permute(0, 3, 1, 2)
         features, regression, classification, anchors = model(x)
 
         preds = postprocess(x,
@@ -138,6 +151,9 @@ if __name__ == '__main__':
 
         if use_cuda:
             model.cuda()
+
+            if use_float16:
+                model.half()
 
         image_ids = evaluate_coco(VAL_IMGS, SET_NAME, image_ids, coco_gt, model)
 

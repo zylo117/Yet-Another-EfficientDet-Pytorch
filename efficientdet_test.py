@@ -15,13 +15,14 @@ from efficientdet.utils import BBoxTransform, ClipBoxes
 from utils.utils import preprocess, invert_affine, postprocess
 
 compound_coef = 0
-force_input_size = None  # set None to use default size
+force_input_size = 1920  # set None to use default size
 img_path = 'test/img.png'
 
 threshold = 0.2
 iou_threshold = 0.2
 
 use_cuda = True
+use_float16 = False
 
 obj_list = ['person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus', 'train', 'truck', 'boat', 'traffic light',
             'fire hydrant', '', 'stop sign', 'parking meter', 'bench', 'bird', 'cat', 'dog', 'horse', 'sheep',
@@ -45,7 +46,7 @@ if use_cuda:
 else:
     x = torch.stack([torch.from_numpy(fi) for fi in framed_imgs], 0)
 
-x = x.to(torch.float32).permute(0, 3, 1, 2)
+x = x.to(torch.float32 if not use_float16 else torch.float16).permute(0, 3, 1, 2)
 
 model = EfficientDetBackbone(compound_coef=compound_coef, num_classes=len(obj_list))
 model.load_state_dict(torch.load(f'weights/efficientdet-d{compound_coef}.pth'))
@@ -54,6 +55,8 @@ model.eval()
 
 if use_cuda:
     model = model.cuda()
+if use_float16:
+    model = model.half()
 
 with torch.no_grad():
     features, regression, classification, anchors = model(x)
@@ -101,12 +104,11 @@ with torch.no_grad():
         _, regression, classification, anchors = model(x)
 
         out = postprocess(x,
-                    anchors, regression, classification,
-                    regressBoxes, clipBoxes,
-                    threshold, iou_threshold)
+                          anchors, regression, classification,
+                          regressBoxes, clipBoxes,
+                          threshold, iou_threshold)
         out = invert_affine(framed_metas, out)
 
     t2 = time.time()
     tact_time = (t2 - t1) / 10
     print(f'{tact_time} seconds, {1 / tact_time} FPS, @batch_size 1')
-
