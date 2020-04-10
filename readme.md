@@ -89,6 +89,10 @@ ___
     mean: [0.485, 0.456, 0.406]
     std: [0.229, 0.224, 0.225]
     
+    # this is coco anchors, change it if necessary
+    anchors_scales: [2 ** 0, 2 ** (1.0 / 3.0), 2 ** (2.0 / 3.0)]
+    anchors_ratios: [(1.0, 1.0), (1.4, 0.7), (0.7, 1.4)]
+    
     # objects from all labels from your dataset with the order from your annotations.
     # its index must match your dataset's category_id.
     # category_id is one_indexed,

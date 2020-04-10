@@ -26,7 +26,7 @@ class Params:
         self.params = yaml.safe_load(open(project_file).read())
 
     def __getattr__(self, item):
-        return self.params[item]
+        return self.params.get(item, None)
 
 
 def get_args():
@@ -98,7 +98,8 @@ def train(opt):
                                                         Resizer(input_sizes[opt.compound_coef])]))
     val_generator = DataLoader(val_set, **val_params)
 
-    model = EfficientDetBackbone(num_anchors=9, num_classes=len(params.obj_list), compound_coef=opt.compound_coef)
+    model = EfficientDetBackbone(num_classes=len(params.obj_list), compound_coef=opt.compound_coef,
+                                 ratios=params.anchors_ratios, scales=params.anchors_scales)
 
     # load last weights
     if opt.load_weights is not None:

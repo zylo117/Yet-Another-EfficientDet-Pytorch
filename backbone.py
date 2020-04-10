@@ -10,7 +10,7 @@ from efficientdet.utils import Anchors
 
 
 class EfficientDetBackbone(nn.Module):
-    def __init__(self, num_anchors=9, num_classes=80, compound_coef=0, load_weights=False, **kwargs):
+    def __init__(self, num_classes=80, compound_coef=0, load_weights=False, **kwargs):
         super(EfficientDetBackbone, self).__init__()
         self.compound_coef = compound_coef
 
@@ -19,8 +19,8 @@ class EfficientDetBackbone(nn.Module):
         self.input_sizes = [512, 640, 768, 896, 1024, 1280, 1280, 1536]
         self.box_class_repeats = [3, 3, 3, 4, 4, 4, 5, 5]
         self.anchor_scale = [4., 4., 4., 4., 4., 4., 4., 5.]
-        self.aspect_ratios = [(1.0, 1.0), (1.4, 0.7), (0.7, 1.4)]
-        self.num_scales = 3
+        self.aspect_ratios = kwargs.get('ratios', [(1.0, 1.0), (1.4, 0.7), (0.7, 1.4)])
+        self.num_scales = len(kwargs.get('scales', [2 ** 0, 2 ** (1.0 / 3.0), 2 ** (2.0 / 3.0)]))
         conv_channel_coef = {
             # the channels of P3/P4/P5.
             0: [40, 112, 320],
