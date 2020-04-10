@@ -9,17 +9,16 @@ The pytorch re-implement of the official [EfficientDet](https://github.com/googl
 
 The performance is very close to the paper's, it is still SOTA. 
 
-| coefficient | pth_download | onnx_download | FPS | mAP 0.5:0.95(this repo) | mAP 0.5:0.95(paper) |
-| :----------: | :--------: | :-----------: | :--------: | :--------: | :-----: |
-| D0 | [efficientdet-d0.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d0.pth) | pending | 35.13 | 32.6 | 33.8
-| D1 | [efficientdet-d1.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d1.pth) | pending | 27.34 | 38.2 | 39.6
-| D2 | [efficientdet-d2.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d2.pth) | pending | 25.24 | 41.5 | 43.0
-| D3 | [efficientdet-d3.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d3.pth) | pending | 21.94 | 44.9 | 45.8
-| D4 | [efficientdet-d4.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d4.pth) | pending | 14.27 | 48.1 | 49.4
-| D5 | [efficientdet-d5.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d5.pth) | pending | 6.93 |49.5 | 50.7
-| D6 | [efficientdet-d6.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d6.pth) | pending | 5.16 | 50.1 | 51.7
-| D7 | soon | pending | pending | soon | 52.2
-
+| coefficient | pth_download | onnx_download | GPU Mem(MB) | FPS | mAP 0.5:0.95(this repo) | mAP 0.5:0.95(paper) |
+| :-----: | :-----: | :------: | :------: | :------: | :-----: | :-----: |
+| D0 | [efficientdet-d0.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d0.pth) | pending | 1049 | 35.13 | 32.6 | 33.8
+| D1 | [efficientdet-d1.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d1.pth) | pending | 1159 | 27.34 | 38.2 | 39.6
+| D2 | [efficientdet-d2.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d2.pth) | pending | 1321 | 25.24 | 41.5 | 43.0
+| D3 | [efficientdet-d3.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d3.pth) | pending | 1647 | 21.94 | 44.9 | 45.8
+| D4 | [efficientdet-d4.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d4.pth) | pending | 1903 | 14.27 | 48.1 | 49.4
+| D5 | [efficientdet-d5.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d5.pth) | pending | 2255 | 6.93 |49.5 | 50.7
+| D6 | [efficientdet-d6.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d6.pth) | pending | 2985 | 5.16 | 50.1 | 51.7
+| D7 | [efficientdet-d7.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d7.pth) | pending | 3819 | pending | soon | 52.2
 
 ## Speed Test
 
@@ -41,6 +40,8 @@ Run this test on 2080Ti, Ubuntu 19.10 x64.
 
 ___
 # Update log
+
+[2020-04-10] add D7 (D6 with larger input size and larger anchor scale) support and test its mAP
 
 [2020-04-09] allow custom anchor scales and ratios
 
@@ -197,10 +198,8 @@ ___
 - [X] training-scripts
 - [ ] tensorflow's consistency tuning with pytorch. 
 - [X] efficientdet D6 supports
-- [ ] efficientdet D7 supports
+- [X] efficientdet D7 supports
 - [ ] onnx support
-- [ ] float16 mode
-- [ ] float16 mode mAP tests
 - [ ] tensorRT/TVM support
 - [ ] re-implement tensorflow's weird bilinear interpolation algorithm in python, then cython.
 
