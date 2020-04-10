@@ -168,7 +168,10 @@ def train(opt):
 
     try:
         for epoch in range(opt.num_epochs):
-            model.train()
+            last_epoch = step // num_iter_per_epoch
+            if epoch < last_epoch:
+                continue
+
             epoch_loss = []
             progress_bar = tqdm(training_generator)
             for iter, data in enumerate(progress_bar):
@@ -203,7 +206,7 @@ def train(opt):
 
                     progress_bar.set_description(
                         'Step: {}. Epoch: {}/{}. Iteration: {}/{}. Cls loss: {:.5f}. Reg loss: {:.5f}. Total loss: {:.5f}'.format(
-                            step, epoch + 1, opt.num_epochs, iter + 1, num_iter_per_epoch, cls_loss.item(),
+                            step, epoch, opt.num_epochs, iter + 1, num_iter_per_epoch, cls_loss.item(),
                             reg_loss.item(), loss.item()))
                     writer.add_scalars('Loss', {'train': loss}, step)
                     writer.add_scalars('Regression_loss', {'train': reg_loss}, step)
@@ -255,7 +258,7 @@ def train(opt):
 
                 print(
                     'Val. Epoch: {}/{}. Classification loss: {:1.5f}. Regression loss: {:1.5f}. Total loss: {:1.5f}'.format(
-                        epoch + 1, opt.num_epochs, cls_loss, reg_loss, loss.mean()))
+                        epoch, opt.num_epochs, cls_loss, reg_loss, loss.mean()))
                 writer.add_scalars('Total_loss', {'val': loss}, step)
                 writer.add_scalars('Regression_loss', {'val': reg_loss}, step)
                 writer.add_scalars('Classfication_loss', {'val': cls_loss}, step)
