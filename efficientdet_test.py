@@ -3,6 +3,7 @@
 """
 Simple Inference Script of EfficientDet-Pytorch
 """
+import time
 
 import torch
 
@@ -14,7 +15,7 @@ from efficientdet.utils import BBoxTransform, ClipBoxes
 from utils.utils import preprocess, invert_affine, postprocess
 
 compound_coef = 0
-force_input_size = 1920  # set None to use default size
+force_input_size = 512  # set None to use default size
 img_path = 'test/img.png'
 
 threshold = 0.2
@@ -57,13 +58,13 @@ if use_cuda:
 with torch.no_grad():
     features, regression, classification, anchors = model(x)
 
-regressBoxes = BBoxTransform()
-clipBoxes = ClipBoxes()
+    regressBoxes = BBoxTransform()
+    clipBoxes = ClipBoxes()
 
-out = postprocess(x,
-                  anchors, regression, classification,
-                  regressBoxes, clipBoxes,
-                  threshold, iou_threshold)
+    out = postprocess(x,
+                      anchors, regression, classification,
+                      regressBoxes, clipBoxes,
+                      threshold, iou_threshold)
 
 
 def display(preds, imgs, imshow=True, imwrite=False):
@@ -90,4 +91,22 @@ def display(preds, imgs, imshow=True, imwrite=False):
 
 
 out = invert_affine(framed_metas, out)
-display(out, ori_imgs, imwrite=True)
+# display(out, ori_imgs, imwrite=True)
+
+print('running speed test...')
+print('inferring image for 10 times...')
+with torch.no_grad():
+    t1 = time.time()
+    for _ in range(10):
+        _, regression, classification, anchors = model(x)
+
+        out = postprocess(x,
+                    anchors, regression, classification,
+                    regressBoxes, clipBoxes,
+                    threshold, iou_threshold)
+        out = invert_affine(framed_metas, out)
+
+    t2 = time.time()
+    tact_time = (t2 - t1) / 10
+    print(f'{tact_time} seconds, {1 / tact_time} FPS, @batch_size 1')
+

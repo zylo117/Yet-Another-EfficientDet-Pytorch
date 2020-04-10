@@ -3,11 +3,11 @@
 The pytorch re-implement of the official [EfficientDet](https://github.com/google/automl/efficientdet) with SOTA performance in real time, original paper link: https://arxiv.org/abs/1911.09070
 
 
-# Pretrained weights and performance
+# Performance
+
+## Pretrained weights and benchmark
 
 The performance is very close to the paper's, it is still SOTA. 
-
-And this pure-pytorch implement is much faster than the official Tensorflow version. Speed test is on its way.
 
 | coefficient | pth_download | onnx_download | mAP 0.5:0.95(this repo) | mAP 0.5:0.95(paper) |
 | :----------: | :--------: | :-----------: | :--------: | :-----: |
@@ -19,6 +19,24 @@ And this pure-pytorch implement is much faster than the official Tensorflow vers
 | D5 | [efficientdet-d5.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d5.pth) | pending | 49.5 | 50.7
 | D6 | [efficientdet-d6.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d6.pth) | pending | 50.1 | 51.7
 | D7 | soon | pending | soon | 52.2
+
+
+## Speed Test
+
+And this pure-pytorch implement is much faster than the official Tensorflow version.
+
+| coefficient | Time | FPS |  Ratio |
+| :------: | :------: | :------: | :-----: |
+| Official D0 (tf postprocess) | 0.226s | 4.42 | 1X |
+| Official D0 (numpy postprocess) | 0.134s | 7.46 | 1.69X |
+| **_Yet-Another-EfficientDet-D0_** | **_0.028s_** | **_35.13_** | **_7.95X_** |
+
+
+Test method:
+
+1. Prepare two image tensor with the same content, size (1,3,512,512)-pytorch, (1,512,512,3)-tensorflow.
+2. Initiate everything by inferring once.
+3. Run 10 times with batchsize 1 and calculate the average time, including post-processing and visualization, to make the test more practical.
 
 ___
 # Update log
