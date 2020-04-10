@@ -5,7 +5,9 @@ The pytorch re-implement of the official [EfficientDet](https://github.com/googl
 
 # Pretrained weights and performance
 
-The performance is a little bit lower than the paper's, yet it is still SOTA. 
+The performance is very close to the paper's, it is still SOTA. 
+
+And this pure-pytorch implement is much faster than the official Tensorflow version. Speed test is on its way.
 
 | coefficient | pth_download | onnx_download | mAP 0.5:0.95(this repo) | mAP 0.5:0.95(paper) |
 | :----------: | :--------: | :-----------: | :--------: | :-----: |
