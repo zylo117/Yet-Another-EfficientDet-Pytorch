@@ -18,12 +18,12 @@ The performance is very close to the paper's, it is still SOTA.
 | D4 | [efficientdet-d4.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d4.pth) | pending | 14.27 | 48.1 | 49.4
 | D5 | [efficientdet-d5.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d5.pth) | pending | 6.93 |49.5 | 50.7
 | D6 | [efficientdet-d6.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d6.pth) | pending | 5.16 | 50.1 | 51.7
-| D7 | soon | pending |  | soon | 52.2
+| D7 | soon | pending | pending | soon | 52.2
 
 
 ## Speed Test
 
-And this pure-pytorch implement is much faster than the official Tensorflow version.
+This pure-pytorch implement is much faster than the official Tensorflow version without any trick.
 
 | coefficient | Time | FPS |  Ratio |
 | :------: | :------: | :------: | :-----: |
@@ -34,6 +34,7 @@ And this pure-pytorch implement is much faster than the official Tensorflow vers
 
 Test method:
 
+Run this test on 2080Ti, Ubuntu 19.10 x64.
 1. Prepare two image tensor with the same content, size (1,3,512,512)-pytorch, (1,512,512,3)-tensorflow.
 2. Initiate everything by inferring once.
 3. Run 10 times with batchsize 1 and calculate the average time, including post-processing and visualization, to make the test more practical.
