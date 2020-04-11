@@ -9,6 +9,7 @@ import traceback
 
 import torch
 import yaml
+from torch import nn
 from torch.utils.data import DataLoader
 from torchvision import transforms
 from efficientdet.dataset import CocoDataset, Resizer, Normalizer, Augmenter, collater
@@ -39,11 +40,14 @@ def get_args():
                         help='whether finetunes only the regressor and the classifier, '
                              'useful in early stage convergence or small/easy dataset')
     parser.add_argument('--lr', type=float, default=1e-4)
+    parser.add_argument('--optim', type=str, default='adamw', help='select optimizer for training, '
+                                                                   'suggest using \'admaw\' until the'
+                                                                   ' very final stage then switch to \'sgd\'')
     parser.add_argument('--alpha', type=float, default=0.25)
     parser.add_argument('--gamma', type=float, default=1.5)
     parser.add_argument('--num_epochs', type=int, default=500)
     parser.add_argument('--val_interval', type=int, default=1, help='Number of epoches between valing phases')
-    parser.add_argument('--save_interval', type=int, default=500, help='Number of epoches between saving')
+    parser.add_argument('--save_interval', type=int, default=500, help='Number of steps between saving')
     parser.add_argument('--es_min_delta', type=float, default=0.0,
                         help='Early stopping\'s parameter: minimum change loss to qualify as an improvement')
     parser.add_argument('--es_patience', type=int, default=0,
@@ -53,9 +57,28 @@ def get_args():
     parser.add_argument('--load_weights', type=str, default=None,
                         help='whether to load weights from a checkpoint, set None to initialize, set \'last\' to load last checkpoint')
     parser.add_argument('--saved_path', type=str, default='logs/')
+    parser.add_argument('--debug', type=bool, default=False, help='whether visualize the predicted boxes of trainging, '
+                                                                  'the output images will be in test/')
 
     args = parser.parse_args()
     return args
+
+
+class ModelWithLoss(nn.Module):
+    def __init__(self, model, debug=False):
+        super().__init__()
+        self.criterion = FocalLoss()
+        self.model = model
+        self.debug = debug
+
+    def forward(self, imgs, annotations, obj_list=None):
+        _, regression, classification, anchors = self.model(imgs)
+        if self.debug:
+            cls_loss, reg_loss = self.criterion(classification, regression, anchors, annotations,
+                                                imgs=imgs, obj_list=obj_list)
+        else:
+            cls_loss, reg_loss = self.criterion(classification, regression, anchors, annotations)
+        return cls_loss, reg_loss
 
 
 def train(opt):
@@ -116,7 +139,8 @@ def train(opt):
             ret = model.load_state_dict(torch.load(weights_path), strict=False)
         except RuntimeError as e:
             print(f'[Warning] Ignoring {e}')
-            print('[Warning] Don\'t panic if you see this, this might be because you load a pretrained weights with different number of classes. The rest of the weights should be loaded already.')
+            print(
+                '[Warning] Don\'t panic if you see this, this might be because you load a pretrained weights with different number of classes. The rest of the weights should be loaded already.')
 
         print(f'[Info] loaded weights: {os.path.basename(weights_path)}, resuming checkpoint from step: {last_step}')
     else:
@@ -148,15 +172,20 @@ def train(opt):
 
     writer = SummaryWriter(opt.log_path + f'/{datetime.datetime.now().strftime("%Y%m%d-%H%M%S")}/')
 
+    # warp the model with loss function, to reduce the memory usage on gpu0 and speedup
+    model = ModelWithLoss(model, debug=opt.debug)
+
     if params.num_gpus > 0:
         model = model.cuda()
         if params.num_gpus > 1:
             model = CustomDataParallel(model, params.num_gpus)
 
-    optimizer = torch.optim.AdamW(model.parameters(), opt.lr)
-    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, patience=3, verbose=True)
+    if opt.optim == 'adamw':
+        optimizer = torch.optim.AdamW(model.parameters(), opt.lr)
+    else:
+        optimizer = torch.optim.SGD(model.parameters(), opt.lr, momentum=0.9, nesterov=True)
 
-    criterion = FocalLoss()
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, patience=3, verbose=True)
 
     epoch = 0
     best_loss = 1e5
@@ -175,24 +204,22 @@ def train(opt):
             epoch_loss = []
             progress_bar = tqdm(training_generator)
             for iter, data in enumerate(progress_bar):
+                if iter < step - last_epoch * num_iter_per_epoch:
+                    progress_bar.update()
                 try:
                     imgs = data['img']
                     annot = data['annot']
-
-                    if params.num_gpus > 0:
-                        annot = annot.cuda()
 
                     if params.num_gpus == 1:
                         # if only one gpu, just send it to cuda:0
                         # elif multiple gpus, send it to multiple gpus in CustomDataParallel, not here
                         imgs = imgs.cuda()
+                        annot = annot.cuda()
 
                     optimizer.zero_grad()
-                    _, regression, classification, anchors = model(imgs)
-
-                    cls_loss, reg_loss = criterion(classification, regression, anchors, annot,
-                                                   # imgs=imgs, obj_list=params.obj_list  # uncomment this to debug
-                                                   )
+                    cls_loss, reg_loss = model(imgs, annot, obj_list=params.obj_list)
+                    cls_loss = cls_loss.mean()
+                    reg_loss = reg_loss.mean()
 
                     loss = cls_loss + reg_loss
                     if loss == 0 or not torch.isfinite(loss):
@@ -237,14 +264,13 @@ def train(opt):
                         imgs = data['img']
                         annot = data['annot']
 
-                        if params.num_gpus > 0:
-                            annot = annot.cuda()
-
                         if params.num_gpus == 1:
                             imgs = imgs.cuda()
+                            annot = annot.cuda()
 
-                        _, regression, classification, anchors = model(imgs)
-                        cls_loss, reg_loss = criterion(classification, regression, anchors, annot)
+                        cls_loss, reg_loss = model(imgs, annot, obj_list=params.obj_list)
+                        cls_loss = cls_loss.mean()
+                        reg_loss = reg_loss.mean()
 
                         loss = cls_loss + reg_loss
                         if loss == 0 or not torch.isfinite(loss):

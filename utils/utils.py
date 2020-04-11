@@ -1,3 +1,5 @@
+import os
+
 import cv2
 import numpy as np
 import torch
@@ -126,6 +128,7 @@ def display(preds, imgs, obj_list, imshow=True, imwrite=False):
             cv2.waitKey(0)
 
         if imwrite:
+            os.makedirs('test/', exist_ok=True)
             cv2.imwrite(f'test/{uuid.uuid4().hex}.jpg', imgs[i])
 
 
@@ -175,7 +178,8 @@ class CustomDataParallel(nn.DataParallel):
         devices = ['cuda:' + str(x) for x in range(self.num_gpus)]
         splits = inputs[0].shape[0] // self.num_gpus
 
-        return [inputs[0][splits * device_idx: splits * (device_idx + 1)].to(f'cuda:{device_idx}', non_blocking=True)
+        return [(inputs[0][splits * device_idx: splits * (device_idx + 1)].to(f'cuda:{device_idx}', non_blocking=True),
+                 inputs[1][splits * device_idx: splits * (device_idx + 1)].to(f'cuda:{device_idx}', non_blocking=True))
                 for device_idx in range(len(devices))], \
                [kwargs] * len(devices)
 
