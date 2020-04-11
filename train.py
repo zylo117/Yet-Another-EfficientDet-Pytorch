@@ -206,6 +206,7 @@ def train(opt):
             for iter, data in enumerate(progress_bar):
                 if iter < step - last_epoch * num_iter_per_epoch:
                     progress_bar.update()
+                    continue
                 try:
                     imgs = data['img']
                     annot = data['annot']
