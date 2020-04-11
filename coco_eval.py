@@ -147,7 +147,7 @@ if __name__ == '__main__':
 
     if not os.path.exists(f'{SET_NAME}_bbox_results.json'):
         model = EfficientDetBackbone(compound_coef=compound_coef, num_classes=len(obj_list))
-        model.load_state_dict(torch.load(weights_path))
+        model.load_state_dict(torch.load(weights_path, map_location=torch.device('cpu')))
         model.requires_grad_(False)
         model.eval()
 
