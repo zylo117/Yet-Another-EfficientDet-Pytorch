@@ -30,12 +30,14 @@ ap.add_argument('-c', '--compound_coef', type=int, default=0, help='coefficients
 ap.add_argument('-w', '--weights', type=str, default=None, help='/path/to/weights')
 ap.add_argument('--nms_threshold', type=float, default=0.5, help='nms threshold, don\'t change it if not for testing purposes')
 ap.add_argument('--cuda', type=bool, default=True)
+ap.add_argument('--device', type=int, default=0)
 ap.add_argument('--float16', type=bool, default=False)
 args = ap.parse_args()
 
 compound_coef = args.compound_coef
 nms_threshold = args.nms_threshold
 use_cuda = args.cuda
+gpu = args.device
 use_float16 = args.float16
 project_name = args.project
 weights_path = f'weights/efficientdet-d{compound_coef}.pth' if args.weights is None else args.weights
@@ -63,7 +65,7 @@ def evaluate_coco(img_path, set_name, image_ids, coco, model, threshold=0.05):
         x = torch.from_numpy(framed_imgs[0])
 
         if use_cuda:
-            x = x.cuda()
+            x = x.cuda(gpu)
             if use_float16:
                 x = x.half()
             else:
@@ -150,7 +152,7 @@ if __name__ == '__main__':
         model.eval()
 
         if use_cuda:
-            model.cuda()
+            model.cuda(gpu)
 
             if use_float16:
                 model.half()
