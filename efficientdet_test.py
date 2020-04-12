@@ -42,7 +42,6 @@ obj_list = ['person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus', 'train'
 input_sizes = [512, 640, 768, 896, 1024, 1280, 1280, 1536]
 input_size = input_sizes[compound_coef] if force_input_size is None else force_input_size
 ori_imgs, framed_imgs, framed_metas = preprocess(img_path, max_size=input_size)
-x = torch.tensor(framed_imgs).cuda()
 
 if use_cuda:
     x = torch.stack([torch.from_numpy(fi).cuda() for fi in framed_imgs], 0)
