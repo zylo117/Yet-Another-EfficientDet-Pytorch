@@ -6,6 +6,7 @@ Simple Inference Script of EfficientDet-Pytorch
 import time
 
 import torch
+from torch.backends import cudnn
 
 from backbone import EfficientDetBackbone
 import cv2
@@ -23,6 +24,8 @@ iou_threshold = 0.2
 
 use_cuda = True
 use_float16 = False
+cudnn.fastest = True
+cudnn.benchmark = True
 
 obj_list = ['person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus', 'train', 'truck', 'boat', 'traffic light',
             'fire hydrant', '', 'stop sign', 'parking meter', 'bench', 'bird', 'cat', 'dog', 'horse', 'sheep',
@@ -97,8 +100,9 @@ out = invert_affine(framed_metas, out)
 display(out, ori_imgs, imshow=False, imwrite=True)
 
 print('running speed test...')
-print('inferring image for 10 times...')
 with torch.no_grad():
+    print('test1: model inferring and postprocessing')
+    print('inferring image for 10 times...')
     t1 = time.time()
     for _ in range(10):
         _, regression, classification, anchors = model(x)
@@ -108,6 +112,16 @@ with torch.no_grad():
                           regressBoxes, clipBoxes,
                           threshold, iou_threshold)
         out = invert_affine(framed_metas, out)
+
+    t2 = time.time()
+    tact_time = (t2 - t1) / 10
+    print(f'{tact_time} seconds, {1 / tact_time} FPS, @batch_size 1')
+
+    print('test2: model inferring only')
+    print('inferring image for 10 times...')
+    t1 = time.time()
+    for _ in range(10):
+        _, regression, classification, anchors = model(x)
 
     t2 = time.time()
     tact_time = (t2 - t1) / 10

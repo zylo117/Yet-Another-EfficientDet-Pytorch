@@ -9,26 +9,28 @@ The pytorch re-implement of the official [EfficientDet](https://github.com/googl
 
 The performance is very close to the paper's, it is still SOTA. 
 
+The speed/FPS test includes the time of post-processing with no jit/data precision trick.
+
 | coefficient | pth_download | onnx_download | GPU Mem(MB) | FPS | mAP 0.5:0.95(this repo) | mAP 0.5:0.95(paper) |
 | :-----: | :-----: | :------: | :------: | :------: | :-----: | :-----: |
-| D0 | [efficientdet-d0.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d0.pth) | pending | 1049 | 35.13 | 32.6 | 33.8
-| D1 | [efficientdet-d1.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d1.pth) | pending | 1159 | 27.34 | 38.2 | 39.6
-| D2 | [efficientdet-d2.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d2.pth) | pending | 1321 | 25.24 | 41.5 | 43.0
-| D3 | [efficientdet-d3.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d3.pth) | pending | 1647 | 21.94 | 44.9 | 45.8
-| D4 | [efficientdet-d4.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d4.pth) | pending | 1903 | 14.27 | 48.1 | 49.4
-| D5 | [efficientdet-d5.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d5.pth) | pending | 2255 | 6.93 |49.5 | 50.7
-| D6 | [efficientdet-d6.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d6.pth) | pending | 2985 | 5.16 | 50.1 | 51.7
-| D7 | [efficientdet-d7.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d7.pth) | pending | 3819 | 3.61 | 50.7 | 52.2
+| D0 | [efficientdet-d0.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d0.pth) | pending | 1049 | 36.20 | 32.6 | 33.8
+| D1 | [efficientdet-d1.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d1.pth) | pending | 1159 | 29.69 | 38.2 | 39.6
+| D2 | [efficientdet-d2.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d2.pth) | pending | 1321 | 26.50 | 41.5 | 43.0
+| D3 | [efficientdet-d3.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d3.pth) | pending | 1647 | 22.73 | 44.9 | 45.8
+| D4 | [efficientdet-d4.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d4.pth) | pending | 1903 | 14.75 | 48.1 | 49.4
+| D5 | [efficientdet-d5.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d5.pth) | pending | 2255 | 7.11 |49.5 | 50.7
+| D6 | [efficientdet-d6.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d6.pth) | pending | 2985 | 5.30 | 50.1 | 51.7
+| D7 | [efficientdet-d7.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d7.pth) | pending | 3819 | 3.73 | 50.7 | 52.2
 
 ## Speed Test
 
-This pure-pytorch implement is 25 times faster than the official Tensorflow version without any trick.
+This pure-pytorch implement is 26 times faster than the official Tensorflow version without any trick.
 
 | coefficient | Time | FPS |  Ratio |
 | :------: | :------: | :------: | :-----: |
 | Official D0 (tf postprocess) | 0.713s | 1.40 | 1X |
 | Official D0 (numpy postprocess) | 0.477s | 2.09 | 1.49X |
-| **_Yet-Another-EfficientDet-D0_** | **_0.028s_** | **_35.13_** | **_25.09X_** |
+| **_Yet-Another-EfficientDet-D0_** | **_0.028s_** | **_36.20_** | **_25.86X_** |
 
 
 Test method:
