@@ -1,3 +1,5 @@
+# Author: Zylo117
+
 import os
 
 import cv2
