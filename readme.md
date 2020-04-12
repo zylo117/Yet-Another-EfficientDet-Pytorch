@@ -209,12 +209,8 @@ ___
 - [X] adapt anchor strategies
 - [X] mAP tests
 - [X] training-scripts
-- [ ] tensorflow's consistency tuning with pytorch. 
 - [X] efficientdet D6 supports
 - [X] efficientdet D7 supports
-- [ ] onnx support
-- [ ] tensorRT/TVM support
-- [ ] re-implement tensorflow's weird bilinear interpolation algorithm in python, then cython.
 
 # FAQ:
 
