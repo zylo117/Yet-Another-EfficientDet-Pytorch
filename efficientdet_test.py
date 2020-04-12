@@ -116,13 +116,14 @@ with torch.no_grad():
     tact_time = (t2 - t1) / 10
     print(f'{tact_time} seconds, {1 / tact_time} FPS, @batch_size 1')
 
-    print('test2: model inferring only')
-    print('inferring images for batch_size 32 for 10 times...')
-    t1 = time.time()
-    x = torch.cat([x] * 32, 0)
-    for _ in range(10):
-        _, regression, classification, anchors = model(x)
-
-    t2 = time.time()
-    tact_time = (t2 - t1) / 10
-    print(f'{tact_time} seconds, {32 / tact_time} FPS, @batch_size 32')
+    # uncomment this if you want a extreme fps test
+    # print('test2: model inferring only')
+    # print('inferring images for batch_size 32 for 10 times...')
+    # t1 = time.time()
+    # x = torch.cat([x] * 32, 0)
+    # for _ in range(10):
+    #     _, regression, classification, anchors = model(x)
+    #
+    # t2 = time.time()
+    # tact_time = (t2 - t1) / 10
+    # print(f'{tact_time} seconds, {32 / tact_time} FPS, @batch_size 32')
