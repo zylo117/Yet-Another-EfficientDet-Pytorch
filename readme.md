@@ -22,13 +22,13 @@ The performance is very close to the paper's, it is still SOTA.
 
 ## Speed Test
 
-This pure-pytorch implement is 49 times faster than the official Tensorflow version without any trick.
+This pure-pytorch implement is 25 times faster than the official Tensorflow version without any trick.
 
 | coefficient | Time | FPS |  Ratio |
 | :------: | :------: | :------: | :-----: |
 | Official D0 (tf postprocess) | 0.713s | 1.40 | 1X |
 | Official D0 (numpy postprocess) | 0.477s | 2.09 | 1.49X |
-| **_Yet-Another-EfficientDet-D0_** | **_0.028s_** | **_35.13_** | **_49.27X_** |
+| **_Yet-Another-EfficientDet-D0_** | **_0.028s_** | **_35.13_** | **_25.09X_** |
 
 
 Test method:
