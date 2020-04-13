@@ -316,3 +316,10 @@ Appreciate the great work from the following repositories:
 If you like this repository, or if you'd like to support the author for any reason, you can donate to the author. Feel free to send me your name or introducing pages, I will make sure your name(s) on the sponsors list. 
 
 <img src="https://raw.githubusercontent.com/zylo117/Yet-Another-Efficient-Pytorch/master/res/alipay.jpg" width="360">
+
+## Sponsors
+
+Sincerely thank you for your generosity.
+
+[cndylan](https://github.com/cndylan)
+[claire-s11](https://github.com/claire-s11)
