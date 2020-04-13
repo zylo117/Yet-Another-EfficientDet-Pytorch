@@ -140,27 +140,27 @@ ___
     # The first few epoches will be rather unstable,
     # it's quite normal when you train from scratch.
     
-    python train.py -c 0 --batchsize 12
+    python train.py -c 0 --batch_size 12
     
 ## 3.b. Train a custom dataset from scratch
     
     # train efficientdet-d1 on a custom dataset 
     # with batchsize 8 and learning rate 1e-5
     
-    python train.py -c 1 --batchsize 8 --lr 1e-5
+    python train.py -c 1 --batch_size 8 --lr 1e-5
     
 ## 3.c. Train a custom dataset with pretrained weights (Highly Recommended)
 
     # train efficientdet-d2 on a custom dataset with pretrained weights
     # with batchsize 8 and learning rate 1e-5 for 10 epoches
     
-    python train.py -c 2 --batchsize 8 --lr 1e-5 --num_epochs 10 \
+    python train.py -c 2 --batch_size 8 --lr 1e-5 --num_epochs 10 \
      --load_weights /path/to/your/weights/efficientdet-d2.pth
     
     # with a coco-pretrained, you can even freeze the backbone and train heads only
     # to speed up training and help convergence.
     
-    python train.py -c 2 --batchsize 8 --lr 1e-5 --num_epochs 10 \
+    python train.py -c 2 --batch_size 8 --lr 1e-5 --num_epochs 10 \
      --load_weights /path/to/your/weights/efficientdet-d2.pth \
      --head_only True
      
@@ -173,7 +173,7 @@ ___
 
     # let says you started a training session like this.
     
-    python train.py -c 2 --batchsize 8 --lr 1e-5 \
+    python train.py -c 2 --batch_size 8 --lr 1e-5 \
      --load_weights /path/to/your/weights/efficientdet-d2.pth \
      --head_only True
      
@@ -182,7 +182,7 @@ ___
     # now you want to resume training from the last checkpoint
     # simply set load_weights to 'last'
     
-    python train.py -c 2 --batchsize 8 --lr 1e-5 \
+    python train.py -c 2 --batch_size 8 --lr 1e-5 \
      --load_weights last \
      --head_only True
 
@@ -196,7 +196,7 @@ ___
 ## 7. Debug training (optional)
     
     # when you get bad result, you need to debug the training result.
-    python train.py -c 2 --batchsize 8 --lr 1e-5 --debug True
+    python train.py -c 2 --batch_size 8 --lr 1e-5 --debug True
     
     # then checkout test/ folder, there you can visualize the predicted boxes during training
     # don't panic if you see countless of error boxes, it happens when the training is at early stage.
