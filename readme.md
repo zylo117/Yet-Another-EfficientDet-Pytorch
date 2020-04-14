@@ -43,6 +43,8 @@ Run this test on 2080Ti, Ubuntu 19.10 x64.
 ___
 # Update log
 
+[2020-04-14] for those who needs help or can't get a good result after several epochs, check out this [tutorial](tutorial/train_shape.ipynb). You can run it on colab with GPU support.
+
 [2020-04-10] warp the loss function within the training model, so that the memory usage will be balanced when training with multiple gpus, enabling training with bigger batchsize. 
 
 [2020-04-10] add D7 (D6 with larger input size and larger anchor scale) support and test its mAP
@@ -72,6 +74,8 @@ ___
     python efficientdet_test.py
 
 # Training
+
+Training EfficientDet is a painful and time-consuming task. You shouldn't expect to get a good result within a day or two. Please be patient. 
 
 ## 1. Prepare your dataset
 
