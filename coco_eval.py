@@ -124,7 +124,7 @@ def evaluate_coco(img_path, set_name, image_ids, coco, model, threshold=0.05):
     return processed_image_ids
 
 
-def eval(coco_gt, image_ids, pred_json_path):
+def _eval(coco_gt, image_ids, pred_json_path):
     # load results in COCO evaluation tool
     coco_pred = coco_gt.loadRes(pred_json_path)
 
@@ -146,7 +146,8 @@ if __name__ == '__main__':
     image_ids = coco_gt.getImgIds()[:MAX_IMAGES]
 
     if not os.path.exists(f'{SET_NAME}_bbox_results.json'):
-        model = EfficientDetBackbone(compound_coef=compound_coef, num_classes=len(obj_list))
+        model = EfficientDetBackbone(compound_coef=compound_coef, num_classes=len(obj_list),
+                                     ratios=eval(params['anchors_ratios']), scales=eval(params['anchors_scales']))
         model.load_state_dict(torch.load(weights_path, map_location=torch.device('cpu')))
         model.requires_grad_(False)
         model.eval()
@@ -159,6 +160,6 @@ if __name__ == '__main__':
 
         image_ids = evaluate_coco(VAL_IMGS, SET_NAME, image_ids, coco_gt, model)
 
-        eval(coco_gt, image_ids, f'{SET_NAME}_bbox_results.json')
+        _eval(coco_gt, image_ids, f'{SET_NAME}_bbox_results.json')
     else:
-        eval(coco_gt, image_ids, f'{SET_NAME}_bbox_results.json')
+        _eval(coco_gt, image_ids, f'{SET_NAME}_bbox_results.json')
