@@ -38,10 +38,10 @@ class FocalLoss(nn.Module):
         anchor = anchors[0, :, :]  # assuming all image sizes are the same, which it is
         dtype = anchors.dtype
 
-        anchor_widths = anchor[:, 2] - anchor[:, 0]
-        anchor_heights = anchor[:, 3] - anchor[:, 1]
-        anchor_ctr_x = anchor[:, 0] + 0.5 * anchor_widths
-        anchor_ctr_y = anchor[:, 1] + 0.5 * anchor_heights
+        anchor_widths = anchor[:, 3] - anchor[:, 1]
+        anchor_heights = anchor[:, 2] - anchor[:, 0]
+        anchor_ctr_x = anchor[:, 1] + 0.5 * anchor_widths
+        anchor_ctr_y = anchor[:, 0] + 0.5 * anchor_heights
 
         for j in range(batch_size):
 
@@ -150,7 +150,7 @@ class FocalLoss(nn.Module):
             out = postprocess(imgs.detach(),
                               torch.stack([anchors[0]] * imgs.shape[0], 0).detach(), regressions.detach(), classifications.detach(),
                               regressBoxes, clipBoxes,
-                              0.5, 0.5)
+                              0.5, 0.3)
             imgs = imgs.permute(0, 2, 3, 1).cpu().numpy()
             imgs = ((imgs * [0.229, 0.224, 0.225] + [0.485, 0.456, 0.406]) * 255).astype(np.uint8)
             imgs = [cv2.cvtColor(img, cv2.COLOR_RGB2BGR) for img in imgs]
