@@ -9,6 +9,6 @@ std: [0.229, 0.224, 0.225]
 
 # this anchor is adapted to the dataset
 anchors_scales: '[2 ** 0, 2 ** (1.0 / 3.0), 2 ** (2.0 / 3.0)]'
-anchors_ratios: '[(1.0, 1.0), (2.8, 0.7), (0.7, 2.8)]'
+anchors_ratios: '[(1.0, 1.0), (1.4, 0.7), (0.7, 1.4)]'
 
 obj_list: ['rectangle', 'circle']
