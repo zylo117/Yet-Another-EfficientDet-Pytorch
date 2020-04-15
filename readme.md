@@ -79,6 +79,8 @@ ___
 
 Training EfficientDet is a painful and time-consuming task. You shouldn't expect to get a good result within a day or two. Please be patient. 
 
+Check out this [tutorial](tutorial/train_shape.ipynb) if you are new to this. You can run it on colab with GPU support.
+
 ## 1. Prepare your dataset
 
     # your dataset structure should be like this
