@@ -19,6 +19,7 @@ import numpy as np
 from tqdm.autonotebook import tqdm
 
 from efficientdet.loss import FocalLoss
+from utils.sync_batchnorm import patch_replication_callback
 from utils.utils import replace_w_sync_bn, CustomDataParallel, get_last_weights, init_weights
 
 
@@ -169,6 +170,9 @@ def train(opt):
     # but it would also slow down the training by a little bit.
     if params.num_gpus > 1 and opt.batch_size // params.num_gpus < 4:
         model.apply(replace_w_sync_bn)
+        use_sync_bn = True
+    else:
+        use_sync_bn = False
 
     writer = SummaryWriter(opt.log_path + f'/{datetime.datetime.now().strftime("%Y%m%d-%H%M%S")}/')
 
@@ -179,6 +183,8 @@ def train(opt):
         model = model.cuda()
         if params.num_gpus > 1:
             model = CustomDataParallel(model, params.num_gpus)
+            if use_sync_bn:
+                patch_replication_callback(model)
 
     if opt.optim == 'adamw':
         optimizer = torch.optim.AdamW(model.parameters(), opt.lr)
