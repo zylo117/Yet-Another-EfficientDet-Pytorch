@@ -119,7 +119,7 @@ while vid.grab():
         obj = obj_list[pred['class_ids'][j]]
         score = float(pred['scores'][j])
         cv2.putText(img, '{}, {:.3f}'.format(obj, score),
-                    (x1, y1 + 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
+                    (x1, y1 + 10), cv2.FONT_HERSHEY_SIMPLEX, 1.0,
                     colors[pred['class_ids'][j]], 1)
 
     cv2.imshow('Video', img)
