@@ -11,7 +11,7 @@ from torchvision.ops import nms
 from typing import Union
 import uuid
 
-from utils.sync_batchnorm import SynchronizedBatchNorm2d
+from util.sync_batchnorm import SynchronizedBatchNorm2d
 
 
 def invert_affine(metas: Union[float, list, tuple], preds):
@@ -72,6 +72,12 @@ def preprocess(*image_path, max_size=512, mean=(0.406, 0.456, 0.485), std=(0.225
 
     return ori_imgs, framed_imgs, framed_metas
 
+def preprocess_single_image(img, max_size=512, mean=(0.406, 0.456, 0.485), std=(0.225, 0.224, 0.229)):
+    normalized_img = (img / 255 - mean) / std
+    img_meta = aspectaware_resize_padding(normalized_img[..., ::-1], max_size, max_size, means=None)
+    img_resized = img_meta[0]
+    img_resized_meta = img_meta[1:]
+    return img_resized, img_resized_meta
 
 def postprocess(x, anchors, regression, classification, regressBoxes, clipBoxes, threshold, iou_threshold):
     transformed_anchors = regressBoxes(anchors, regression)

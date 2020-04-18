@@ -1,4 +1,4 @@
-# Author: Zylo117
+# Author: Zylo117, Modified by K.M.Jeon
 
 """
 Simple Inference Script of EfficientDet-Pytorch
@@ -13,11 +13,11 @@ import cv2
 import numpy as np
 
 from efficientdet.utils import BBoxTransform, ClipBoxes
-from util.utils import preprocess, invert_affine, postprocess
+from util.utils import preprocess_single_image, invert_affine, postprocess
 
 compound_coef = 0
 force_input_size = None  # set None to use default size
-img_path = 'test/img.png'
+img_path = 0#"./test/cross.mp4" # or camera id
 
 # replace this part with your project's anchor config
 anchor_ratios = [(1.0, 1.0), (1.4, 0.7), (0.7, 1.4)]
@@ -45,15 +45,8 @@ obj_list = ['person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus', 'train'
 # tf bilinear interpolation is different from any other's, just make do
 input_sizes = [512, 640, 768, 896, 1024, 1280, 1280, 1536]
 input_size = input_sizes[compound_coef] if force_input_size is None else force_input_size
-ori_imgs, framed_imgs, framed_metas = preprocess(img_path, max_size=input_size)
 
-if use_cuda:
-    x = torch.stack([torch.from_numpy(fi).cuda() for fi in framed_imgs], 0)
-else:
-    x = torch.stack([torch.from_numpy(fi) for fi in framed_imgs], 0)
-
-x = x.to(torch.float32 if not use_float16 else torch.float16).permute(0, 3, 1, 2)
-
+#Load EfficientDet Model
 model = EfficientDetBackbone(compound_coef=compound_coef, num_classes=len(obj_list),
                              ratios=anchor_ratios, scales=anchor_scales)
 model.load_state_dict(torch.load(f'weights/efficientdet-d{compound_coef}.pth'))
@@ -65,70 +58,70 @@ if use_cuda:
 if use_float16:
     model = model.half()
 
+# Initialize Modules
 with torch.no_grad():
-    features, regression, classification, anchors = model(x)
-
     regressBoxes = BBoxTransform()
     clipBoxes = ClipBoxes()
 
-    out = postprocess(x,
-                      anchors, regression, classification,
-                      regressBoxes, clipBoxes,
-                      threshold, iou_threshold)
+# open video
+vid = cv2.VideoCapture(img_path)
 
+while vid.grab():
+    ret, frame = vid.retrieve()
+    if not ret:
+        break  
+    # BGR 2 RGB
+    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    
+    # preprocss for single image
+    framed_img, framed_meta = preprocess_single_image(frame, max_size=input_size)
 
-def display(preds, imgs, imshow=True, imwrite=False):
-    for i in range(len(imgs)):
-        if len(preds[i]['rois']) == 0:
-            continue
+    #  detection
+    inference_start_time = time.time()
 
-        for j in range(len(preds[i]['rois'])):
-            (x1, y1, x2, y2) = preds[i]['rois'][j].astype(np.int)
-            cv2.rectangle(imgs[i], (x1, y1), (x2, y2), (255, 255, 0), 2)
-            obj = obj_list[preds[i]['class_ids'][j]]
-            score = float(preds[i]['scores'][j])
+    # convert to tensor
+    #if use_cuda:
+    #    x = torch.stack([torch.from_numpy(fi).cuda() for fi in framed_img], 0)
+    #else:
+    #    x = torch.stack([torch.from_numpy(fi) for fi in framed_img], 0)
+    x = torch.tensor(framed_img, device="cuda:0").unsqueeze(0)
+    x = x.to(torch.float32 if not use_float16 else torch.float16).permute(0, 3, 1, 2)
 
-            cv2.putText(imgs[i], '{}, {:.3f}'.format(obj, score),
-                        (x1, y1 + 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
-                        (255, 255, 0), 1)
-
-        if imshow:
-            cv2.imshow('img', imgs[i])
-            cv2.waitKey(0)
-
-        if imwrite:
-            cv2.imwrite(f'test/img_inferred_d{compound_coef}_this_repo_{i}.jpg', imgs[i])
-
-
-out = invert_affine(framed_metas, out)
-display(out, ori_imgs, imshow=False, imwrite=True)
-
-print('running speed test...')
-with torch.no_grad():
-    print('test1: model inferring and postprocessing')
-    print('inferring image for 10 times...')
-    t1 = time.time()
-    for _ in range(10):
-        _, regression, classification, anchors = model(x)
+    with torch.no_grad():
+        features, regression, classification, anchors = model(x)
 
         out = postprocess(x,
                           anchors, regression, classification,
                           regressBoxes, clipBoxes,
                           threshold, iou_threshold)
-        out = invert_affine(framed_metas, out)
+    inference_end_time = time.time()
+    #logging.info("\t Inference time: %s ", datetime.timedelta(seconds=inference_end_time - inference_start_time))
 
-    t2 = time.time()
-    tact_time = (t2 - t1) / 10
-    print(f'{tact_time} seconds, {1 / tact_time} FPS, @batch_size 1')
+    # detection over
 
-    # uncomment this if you want a extreme fps test
-    # print('test2: model inferring only')
-    # print('inferring images for batch_size 32 for 10 times...')
-    # t1 = time.time()
-    # x = torch.cat([x] * 32, 0)
-    # for _ in range(10):
-    #     _, regression, classification, anchors = model(x)
-    #
-    # t2 = time.time()
-    # tact_time = (t2 - t1) / 10
-    # print(f'{tact_time} seconds, {32 / tact_time} FPS, @batch_size 32')
+    # log FPS on frame
+    ...
+
+
+    # get detection bbox
+    out = invert_affine([framed_meta], out)
+    pred = out[0]
+
+    # reverse to BGR
+    img = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+
+    # draw bbox on frame and display
+    for j in range(len(pred['rois'])):
+        (x1, y1, x2, y2) = pred['rois'][j].astype(np.int)
+        cv2.rectangle(img, (x1, y1), (x2, y2), (255, 255, 0), 2)
+        obj = obj_list[pred['class_ids'][j]]
+        score = float(pred['scores'][j])
+        cv2.putText(img, '{}, {:.3f}'.format(obj, score),
+                    (x1, y1 + 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
+                    (255, 255, 0), 1)
+
+    cv2.imshow('Video', img)
+    key = cv2.waitKey(1) & 0xFF
+    if key == ord("q"):
+        cv2.destroyAllWindows() 
+        os._exit(0)
