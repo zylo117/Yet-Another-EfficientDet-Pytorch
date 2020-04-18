@@ -15,9 +15,9 @@ import numpy as np
 from efficientdet.utils import BBoxTransform, ClipBoxes
 from util.utils import preprocess_single_image, invert_affine, postprocess
 
-compound_coef = 2
+compound_coef = 1
 force_input_size = None  # set None to use default size
-img_path = "./test/cross.mp4" # or camera id
+img_path = "./test/cross.mp4" # or 0 (camera id)
 
 # replace this part with your project's anchor config
 anchor_ratios = [(1.0, 1.0), (1.4, 0.7), (0.7, 1.4)]
@@ -41,7 +41,8 @@ obj_list = ['person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus', 'train'
             'laptop', 'mouse', 'remote', 'keyboard', 'cell phone', 'microwave', 'oven', 'toaster', 'sink',
             'refrigerator', '', 'book', 'clock', 'vase', 'scissors', 'teddy bear', 'hair drier',
             'toothbrush']
-np.random.seed(3)
+
+np.random.seed(5)
 colors = np.random.uniform(0, 255, size=(len(obj_list), 3))
 
 # tf bilinear interpolation is different from any other's, just make do
@@ -82,11 +83,10 @@ while vid.grab():
     inference_start_time = time.time()
 
     # convert to tensor
-    #if use_cuda:
-    #    x = torch.stack([torch.from_numpy(fi).cuda() for fi in framed_img], 0)
-    #else:
-    #    x = torch.stack([torch.from_numpy(fi) for fi in framed_img], 0)
-    x = torch.tensor(framed_img, device="cuda:0").unsqueeze(0)
+    if use_cuda:
+        x = torch.stack([torch.from_numpy(framed_img).cuda()], 0)
+    else:
+        x = torch.stack([torch.from_numpy(framed_img)], 0)
     x = x.to(torch.float32 if not use_float16 else torch.float16).permute(0, 3, 1, 2)
 
     with torch.no_grad():
@@ -119,7 +119,7 @@ while vid.grab():
         obj = obj_list[pred['class_ids'][j]]
         score = float(pred['scores'][j])
         cv2.putText(img, '{}, {:.3f}'.format(obj, score),
-                    (x1, y1 + 10), cv2.FONT_HERSHEY_SIMPLEX, 1.0,
+                    (x1, y1 + 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
                     colors[pred['class_ids'][j]], 1)
 
     cv2.imshow('Video', img)
