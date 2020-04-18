@@ -15,7 +15,8 @@ import numpy as np
 from efficientdet.utils import BBoxTransform, ClipBoxes
 from util.utils import preprocess_single_image, invert_affine, postprocess
 
-compound_coef = 1
+
+compound_coef = 2
 force_input_size = None  # set None to use default size
 img_path = "./test/cross.mp4" # or 0 (camera id)
 
@@ -70,6 +71,9 @@ with torch.no_grad():
 vid = cv2.VideoCapture(img_path)
 
 while vid.grab():
+    #Check Time start
+    t1 = time.time()
+
     ret, frame = vid.retrieve()
     if not ret:
         break  
@@ -96,14 +100,6 @@ while vid.grab():
                           anchors, regression, classification,
                           regressBoxes, clipBoxes,
                           threshold, iou_threshold)
-    inference_end_time = time.time()
-    #logging.info("\t Inference time: %s ", datetime.timedelta(seconds=inference_end_time - inference_start_time))
-
-    # detection over
-
-    # log FPS on frame
-    ...
-
 
     # get detection bbox
     out = invert_affine([framed_meta], out)
@@ -122,8 +118,15 @@ while vid.grab():
                     (x1, y1 + 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
                     colors[pred['class_ids'][j]], 1)
 
+    #Show video in GUI    
     cv2.imshow('Video', img)
     key = cv2.waitKey(1) & 0xFF
     if key == ord("q"):
         cv2.destroyAllWindows() 
         os._exit(0)
+    
+    # Check total processing time
+    t2 = time.time()
+    fps = 1 / (t2 - t1)
+    print("{:.2f}".format(fps))
+        
