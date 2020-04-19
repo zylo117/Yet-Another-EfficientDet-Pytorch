@@ -77,9 +77,10 @@ clipBoxes = ClipBoxes()
 # Video capture
 cap = cv2.VideoCapture(video_src)
 
-while(cap.isOpened()):
-
+while True:
     ret, frame = cap.read()
+    if not ret:
+        break
 
     # frame preprocessing
     ori_imgs, framed_imgs, framed_metas = preprocess_video(frame, max_size=input_size)
