@@ -14,7 +14,7 @@ from efficientdet.utils import BBoxTransform, ClipBoxes
 from utils.utils import preprocess, invert_affine, postprocess, preprocess_video
 
 # Video's path
-video_src = 'videotest.mp4'
+video_src = 'videotest.mp4'  # set int to use webcam, set str to read from a video file
 
 compound_coef = 0
 force_input_size = None  # set None to use default size
