@@ -303,25 +303,8 @@ def train(opt):
 
                     save_checkpoint(model, f'efficientdet-d{opt.compound_coef}_{epoch}_{step}.pth')
 
-                    # onnx export is not tested.
-                    # dummy_input = torch.rand(opt.batch_size, 3, 512, 512)
-                    # if torch.cuda.is_available():
-                    #     dummy_input = dummy_input.cuda()
-                    # if isinstance(model, nn.DataParallel):
-                    #     model.module.backbone_net.model.set_swish(memory_efficient=False)
-                    #
-                    #     torch.onnx.export(model.module, dummy_input,
-                    #                       os.path.join(opt.saved_path, 'signatrix_efficientdet_coco.onnx'),
-                    #                       verbose=False)
-                    #     model.module.backbone_net.model.set_swish(memory_efficient=True)
-                    # else:
-                    #     model.backbone_net.model.set_swish(memory_efficient=False)
-                    #
-                    #     torch.onnx.export(model, dummy_input,
-                    #                       os.path.join(opt.saved_path, 'signatrix_efficientdet_coco.onnx'),
-                    #                       verbose=False)
-                    #     model.backbone_net.model.set_swish(memory_efficient=True)
-
+                model.train()
+                           
                 # Early stopping
                 if epoch - best_epoch > opt.es_patience > 0:
                     print('[Info] Stop training at epoch {}. The lowest loss achieved is {}'.format(epoch, loss))
