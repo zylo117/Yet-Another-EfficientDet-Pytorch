@@ -18,7 +18,7 @@ from util.utils import preprocess_single_image, invert_affine, postprocess
 
 compound_coef = 2
 force_input_size = None  # set None to use default size
-img_path = "./test/cross.mp4" # or 0 (camera id)
+img_path = 0#"./test/cross.mp4" # or 0 (camera id)
 
 # replace this part with your project's anchor config
 anchor_ratios = [(1.0, 1.0), (1.4, 0.7), (0.7, 1.4)]

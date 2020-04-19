@@ -13,7 +13,7 @@ import cv2
 import numpy as np
 
 from efficientdet.utils import BBoxTransform, ClipBoxes
-from util.utils import preprocess, invert_affine, postprocess
+from utils.utils import preprocess, invert_affine, postprocess
 
 compound_coef = 0
 force_input_size = None  # set None to use default size

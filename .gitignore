@@ -129,3 +129,6 @@ dmypy.json
 .pyre/
 .idea/
 weights/
+
+# vscode exception
+.vscode
