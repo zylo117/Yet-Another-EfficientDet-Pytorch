@@ -11,7 +11,7 @@ from torchvision.ops import nms
 from typing import Union
 import uuid
 
-from util.sync_batchnorm import SynchronizedBatchNorm2d
+from utils.sync_batchnorm import SynchronizedBatchNorm2d
 
 
 def invert_affine(metas: Union[float, list, tuple], preds):
