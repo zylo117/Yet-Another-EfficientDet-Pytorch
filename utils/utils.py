@@ -225,7 +225,7 @@ def init_weights(model):
 
         if is_conv_layer:
             if "conv_list" or "header" in name:
-                nn.init.variance_scaling_(module.weight.data)
+                variance_scaling_(module.weight.data)
             else:
                 nn.init.kaiming_uniform_(module.weight.data)
 
