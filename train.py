@@ -55,7 +55,7 @@ def get_args():
                         help='Early stopping\'s parameter: number of epochs with no improvement after which training will be stopped. Set to 0 to disable this technique.')
     parser.add_argument('--data_path', type=str, default='datasets/', help='the root folder of dataset')
     parser.add_argument('--log_path', type=str, default='logs/')
-    parser.add_argument('--load_weights', type=str, default=None,
+    parser.add_argument('-w', '--load_weights', type=str, default=None,
                         help='whether to load weights from a checkpoint, set None to initialize, set \'last\' to load last checkpoint')
     parser.add_argument('--saved_path', type=str, default='logs/')
     parser.add_argument('--debug', type=bool, default=False, help='whether visualize the predicted boxes of trainging, '
