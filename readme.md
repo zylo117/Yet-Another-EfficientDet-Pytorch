@@ -42,10 +42,10 @@ official git version: https://github.com/google/automl/commit/006668f2af1744de03
 | D6 | 3.73 | - | - |
 
 
-Test method:
+Test method (this repo):
 
 Run this test on 2080Ti, Ubuntu 19.10 x64.
-1. Prepare two image tensor with the same content, size (1,3,512,512)-pytorch, (1,512,512,3)-tensorflow.
+1. Prepare a image tensor with the same content, size (1,3,512,512)-pytorch.
 2. Initiate everything by inferring once.
 3. Run 10 times with batchsize 1 and calculate the average time, including post-processing and visualization, to make the test more practical.
 
