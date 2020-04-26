@@ -24,13 +24,22 @@ The speed/FPS test includes the time of post-processing with no jit/data precisi
 
 ## Speed Test
 
-This pure-pytorch implement is 26 times faster than the official Tensorflow version without any trick.
+This pure-pytorch implement is up to 2 times faster than the official Tensorflow version without any trick.
 
-| coefficient | Time | FPS |  Ratio |
+Recorded on 2020-04-26, 
+
+official git version: https://github.com/google/automl/commit/006668f2af1744de0357ca3d400527feaa73c122
+
+| coefficient | FPS(this repo, tested on RTX2080Ti) | FPS(official, tested on T4) |  Ratio |
 | :------: | :------: | :------: | :-----: |
-| Official D0 (tf postprocess) | 0.713s | 1.40 | 1X |
-| Official D0 (numpy postprocess) | 0.477s | 2.09 | 1.49X |
-| **_Yet-Another-EfficientDet-D0_** | **_0.028s_** | **_36.20_** | **_25.86X_** |
+| D0 | 36.20 | 42.1 | 0.86X |
+| D1 | 29.69 | 27.7 | 1.07X |
+| D2 | 26.50 | 19.7 | 1.35X |
+| D3 | 22.73 | 11.8 | 1.93X |
+| D4 | 14.75 | 7.1 | 2.08X |
+| D5 | 7.11 | 3.6 | 1.98X |
+| D6 | 5.30 | 2.6 | 2.03X |
+| D6 | 3.73 | - | - |
 
 
 Test method:
