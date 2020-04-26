@@ -39,7 +39,7 @@ official git version: https://github.com/google/automl/commit/006668f2af1744de03
 | D4 | 14.75 | 7.1 | 2.08X |
 | D5 | 7.11 | 3.6 | 1.98X |
 | D6 | 5.30 | 2.6 | 2.03X |
-| D6 | 3.73 | - | - |
+| D7 | 3.73 | - | - |
 
 
 Test method (this repo):
