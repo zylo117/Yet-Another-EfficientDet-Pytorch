@@ -100,6 +100,7 @@ def postprocess(x, anchors, regression, classification, regressBoxes, clipBoxes,
                 'class_ids': np.array(()),
                 'scores': np.array(()),
             })
+            continue
 
         classification_per = classification[i, scores_over_thresh[i, :], ...].permute(1, 0)
         transformed_anchors_per = transformed_anchors[i, scores_over_thresh[i, :], ...]
