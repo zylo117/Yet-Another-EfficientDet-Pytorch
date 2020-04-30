@@ -56,34 +56,32 @@ class FocalLoss(nn.Module):
             if bbox_annotation.shape[0] == 0:
                 if torch.cuda.is_available()
                     
-                    targets = torch.zeros_like(classification)
-                    alpha_factor = torch.ones_like(targets) * alpha
+                    alpha_factor = torch.ones_like(classification) * alpha
                     targets = targets.cuda()
                     alpha_factor = alpha_factor.cuda()
                     alphe_factot = 1. - alpha_factor
                     focal_weight = classification
                     focal_weight = alpha_factor * torch.pow(focal_weight, gamma)
                     
-                    bce = -((1.0 - targets) * torch.log(1.0 - classification))
+                    bce = -(torch.log(1.0 - classification))
                     
                     cls_loss = focal_weight * bce
                     
                     regression_losses.append(torch.tensor(0).to(dtype).cuda())
-                    classification_losses.append(cls_loss.sum(), min=1.0)
+                    classification_losses.append(cls_loss.sum())
                 else:
                     
-                    targets = torch.zeros_like(classification)
-                    alpha_factor = torch.ones_like(targets) * alpha
+                    alpha_factor = torch.ones_like(classification) * alpha
                     alphe_factot = 1. - alpha_factor
                     focal_weight = classification
                     focal_weight = alpha_factor * torch.pow(focal_weight, gamma)
                     
-                    bce = -((1.0 - targets) * torch.log(1.0 - classification))
+                    bce = -(torch.log(1.0 - classification))
                     
                     cls_loss = focal_weight * bce
                     
                     regression_losses.append(torch.tensor(0).to(dtype))
-                    classification_losses.append(cls_loss.sum(), min=1.0)
+                    classification_losses.append(cls_loss.sum())
 
                 continue
                 
