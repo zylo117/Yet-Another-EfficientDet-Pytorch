@@ -51,18 +51,39 @@ class FocalLoss(nn.Module):
             bbox_annotation = annotations[j]
             bbox_annotation = bbox_annotation[bbox_annotation[:, 4] != -1]
 
+            classification = torch.clamp(classification, 1e-4, 1.0 - 1e-4)
+            
             if bbox_annotation.shape[0] == 0:
-                if torch.cuda.is_available():
+                if torch.cuda.is_available()
+                    
+                    alpha_factor = torch.ones_like(classification) * alpha
+                    alpha_factor = alpha_factor.cuda()
+                    alpha_factor = 1. - alpha_factor
+                    focal_weight = classification
+                    focal_weight = alpha_factor * torch.pow(focal_weight, gamma)
+                    
+                    bce = -(torch.log(1.0 - classification))
+                    
+                    cls_loss = focal_weight * bce
+                    
                     regression_losses.append(torch.tensor(0).to(dtype).cuda())
-                    classification_losses.append(torch.tensor(0).to(dtype).cuda())
+                    classification_losses.append(cls_loss.sum())
                 else:
+                    
+                    alpha_factor = torch.ones_like(classification) * alpha
+                    alpha_factor = 1. - alpha_factor
+                    focal_weight = classification
+                    focal_weight = alpha_factor * torch.pow(focal_weight, gamma)
+                    
+                    bce = -(torch.log(1.0 - classification))
+                    
+                    cls_loss = focal_weight * bce
+                    
                     regression_losses.append(torch.tensor(0).to(dtype))
-                    classification_losses.append(torch.tensor(0).to(dtype))
+                    classification_losses.append(cls_loss.sum())
 
                 continue
-
-            classification = torch.clamp(classification, 1e-4, 1.0 - 1e-4)
-
+                
             IoU = calc_iou(anchor[:, :], bbox_annotation[:, :4])
 
             IoU_max, IoU_argmax = torch.max(IoU, dim=1)
