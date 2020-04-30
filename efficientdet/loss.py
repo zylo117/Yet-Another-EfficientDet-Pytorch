@@ -57,9 +57,8 @@ class FocalLoss(nn.Module):
                 if torch.cuda.is_available()
                     
                     alpha_factor = torch.ones_like(classification) * alpha
-                    targets = targets.cuda()
                     alpha_factor = alpha_factor.cuda()
-                    alphe_factot = 1. - alpha_factor
+                    alpha_factor = 1. - alpha_factor
                     focal_weight = classification
                     focal_weight = alpha_factor * torch.pow(focal_weight, gamma)
                     
@@ -72,7 +71,7 @@ class FocalLoss(nn.Module):
                 else:
                     
                     alpha_factor = torch.ones_like(classification) * alpha
-                    alphe_factot = 1. - alpha_factor
+                    alpha_factor = 1. - alpha_factor
                     focal_weight = classification
                     focal_weight = alpha_factor * torch.pow(focal_weight, gamma)
                     
