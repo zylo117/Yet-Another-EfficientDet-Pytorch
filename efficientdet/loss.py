@@ -67,7 +67,7 @@ class FocalLoss(nn.Module):
                     cls_loss = focal_weight * bce
                     
                     regression_losses.append(torch.tensor(0).to(dtype).cuda())
-                    classification_losses.append(cls_loss.sum(), min=1.0))
+                    classification_losses.append(cls_loss.sum(), min=1.0)
                 else:
                     
                     targets = torch.zeros_like(classification)
@@ -81,7 +81,7 @@ class FocalLoss(nn.Module):
                     cls_loss = focal_weight * bce
                     
                     regression_losses.append(torch.tensor(0).to(dtype))
-                    classification_losses.append(cls_loss.sum(), min=1.0))
+                    classification_losses.append(cls_loss.sum(), min=1.0)
 
                 continue
 
