@@ -54,7 +54,7 @@ class FocalLoss(nn.Module):
             classification = torch.clamp(classification, 1e-4, 1.0 - 1e-4)
             
             if bbox_annotation.shape[0] == 0:
-                if torch.cuda.is_available()
+                if torch.cuda.is_available():
                     
                     alpha_factor = torch.ones_like(classification) * alpha
                     alpha_factor = alpha_factor.cuda()
