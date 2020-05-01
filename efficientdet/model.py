@@ -201,13 +201,13 @@ class BiFPN(nn.Module):
         # Connections for P6_0 and P7_0 to P6_1 respectively
         p6_up = self.conv6_up(self.swish(weight[0] * p6_in + weight[1] * self.p6_upsample(p7_in)))
 
-        # Weights for P5_0 and P6_0 to P5_1
+        # Weights for P5_0 and P6_1 to P5_1
         p5_w1 = self.p5_w1_relu(self.p5_w1)
         weight = p5_w1 / (torch.sum(p5_w1, dim=0) + self.epsilon)
         # Connections for P5_0 and P6_0 to P5_1 respectively
         p5_up = self.conv5_up(self.swish(weight[0] * p5_in + weight[1] * self.p5_upsample(p6_up)))
 
-        # Weights for P4_0 and P5_0 to P4_1
+        # Weights for P4_0 and P5_1 to P4_1
         p4_w1 = self.p4_w1_relu(self.p4_w1)
         weight = p4_w1 / (torch.sum(p4_w1, dim=0) + self.epsilon)
         # Connections for P4_0 and P5_0 to P4_1 respectively
@@ -272,10 +272,10 @@ class BiFPN(nn.Module):
         # Connections for P6_0 and P7_0 to P6_1 respectively
         p6_up = self.conv6_up(self.swish(p6_in + self.p6_upsample(p7_in)))
 
-        # Connections for P5_0 and P6_0 to P5_1 respectively
+        # Connections for P5_0 and P6_1 to P5_1 respectively
         p5_up = self.conv5_up(self.swish(p5_in + self.p5_upsample(p6_up)))
 
-        # Connections for P4_0 and P5_0 to P4_1 respectively
+        # Connections for P4_0 and P5_1 to P4_1 respectively
         p4_up = self.conv4_up(self.swish(p4_in + self.p4_upsample(p5_up)))
 
         # Connections for P3_0 and P4_1 to P3_2 respectively
