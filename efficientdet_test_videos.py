@@ -57,7 +57,7 @@ if use_float16:
 def display(preds, imgs):
     for i in range(len(imgs)):
         if len(preds[i]['rois']) == 0:
-            continue
+            return imgs[i]
 
         for j in range(len(preds[i]['rois'])):
             (x1, y1, x2, y2) = preds[i]['rois'][j].astype(np.int)
