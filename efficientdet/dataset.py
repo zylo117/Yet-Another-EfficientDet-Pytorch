@@ -26,11 +26,7 @@ class CocoDataset(Dataset):
         categories.sort(key=lambda x: x['id'])
 
         self.classes = {}
-        self.coco_labels = {}
-        self.coco_labels_inverse = {}
         for c in categories:
-            self.coco_labels[len(self.classes)] = c['id']
-            self.coco_labels_inverse[c['id']] = len(self.classes)
             self.classes[c['name']] = len(self.classes)
 
         # also load the reverse (label -> name)
@@ -77,7 +73,7 @@ class CocoDataset(Dataset):
 
             annotation = np.zeros((1, 5))
             annotation[0, :4] = a['bbox']
-            annotation[0, 4] = self.coco_label_to_label(a['category_id'])
+            annotation[0, 4] = a['category_id']
             annotations = np.append(annotations, annotation, axis=0)
 
         # transform from [x, y, w, h] to [x1, y1, x2, y2]
@@ -85,12 +81,6 @@ class CocoDataset(Dataset):
         annotations[:, 3] = annotations[:, 1] + annotations[:, 3]
 
         return annotations
-
-    def coco_label_to_label(self, coco_label):
-        return self.coco_labels_inverse[coco_label]
-
-    def label_to_coco_label(self, label):
-        return self.coco_labels[label]
 
 
 def collater(data):
