@@ -18,6 +18,12 @@ from tensorboardX import SummaryWriter
 import numpy as np
 from tqdm.autonotebook import tqdm
 
+try:
+    from apex.fp16_utils import *
+    from apex import amp, optimizers
+except ImportError:
+    print("Apex is not installed. Skipping import")
+
 from efficientdet.loss import FocalLoss
 from utils.sync_batchnorm import patch_replication_callback
 from utils.utils import replace_w_sync_bn, CustomDataParallel, get_last_weights, init_weights
@@ -58,6 +64,7 @@ def get_args():
     parser.add_argument('--saved_path', type=str, default='logs/')
     parser.add_argument('--debug', type=bool, default=False, help='whether visualize the predicted boxes of trainging, '
                                                                   'the output images will be in test/')
+    parser.add_argument('--apex', type=bool, default=False, help='Train using AMP with Apex')                                                                  
 
     args = parser.parse_args()
     return args
@@ -123,6 +130,18 @@ def train(opt):
     model = EfficientDetBackbone(num_classes=len(params.obj_list), compound_coef=opt.compound_coef,
                                  ratios=eval(params.anchors_ratios), scales=eval(params.anchors_scales))
 
+    if opt.optim == 'adamw':
+        optimizer = torch.optim.AdamW(model.parameters(), opt.lr)
+    else:
+        optimizer = torch.optim.SGD(model.parameters(), opt.lr, momentum=0.9, nesterov=True)
+
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, patience=3, verbose=True)
+
+    if opt.apex:
+        # TODO: Parametrize opt_level
+        opt_level = 'O1'
+        model, optimizer = amp.initialize(model, optimizer, opt_level=opt_level)
+
     # load last weights
     if opt.load_weights is not None:
         if opt.load_weights.endswith('.pth'):
@@ -135,7 +154,13 @@ def train(opt):
             last_step = 0
 
         try:
-            ret = model.load_state_dict(torch.load(weights_path), strict=False)
+            checkpoint = torch.load(weights_path)
+            if opt.apex and checkpoint['model'] is None:
+                model.load_state_dict(checkpoint['model'])
+                optimizer.load_state_dict(checkpoint['optimizer'])
+                amp.load_state_dict(checkpoint['amp'])
+            else:
+                model.load_state_dict(checkpoint, strict=False)
         except RuntimeError as e:
             print(f'[Warning] Ignoring {e}')
             print(
@@ -184,13 +209,6 @@ def train(opt):
             if use_sync_bn:
                 patch_replication_callback(model)
 
-    if opt.optim == 'adamw':
-        optimizer = torch.optim.AdamW(model.parameters(), opt.lr)
-    else:
-        optimizer = torch.optim.SGD(model.parameters(), opt.lr, momentum=0.9, nesterov=True)
-
-    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, patience=3, verbose=True)
-
     epoch = 0
     best_loss = 1e5
     best_epoch = 0
@@ -230,7 +248,12 @@ def train(opt):
                     if loss == 0 or not torch.isfinite(loss):
                         continue
 
-                    loss.backward()
+                    if opt.apex:
+                        with amp.scale_loss(loss, optimizer) as scaled_loss:
+                            scaled_loss.backward()
+                    else:
+                        loss.backward()
+
                     # torch.nn.utils.clip_grad_norm_(model.parameters(), 0.1)
                     optimizer.step()
 
@@ -251,7 +274,10 @@ def train(opt):
                     step += 1
 
                     if step % opt.save_interval == 0 and step > 0:
-                        save_checkpoint(model, f'efficientdet-d{opt.compound_coef}_{epoch}_{step}.pth')
+                        if opt.apex:
+                            save_checkpoint(model, f'efficientdet-d{opt.compound_coef}_{epoch}_{step}.pth', optimizer, amp)
+                        else:
+                            save_checkpoint(model, f'efficientdet-d{opt.compound_coef}_{epoch}_{step}.pth')
                         print('checkpoint...')
 
                 except Exception as e:
@@ -299,7 +325,10 @@ def train(opt):
                     best_loss = loss
                     best_epoch = epoch
 
-                    save_checkpoint(model, f'efficientdet-d{opt.compound_coef}_{epoch}_{step}.pth')
+                    if opt.apex:
+                        save_checkpoint(model, f'efficientdet-d{opt.compound_coef}_{epoch}_{step}.pth', optimizer, amp)
+                    else:
+                        save_checkpoint(model, f'efficientdet-d{opt.compound_coef}_{epoch}_{step}.pth')
 
                 model.train()
                            
@@ -308,7 +337,10 @@ def train(opt):
                     print('[Info] Stop training at epoch {}. The lowest loss achieved is {}'.format(epoch, best_loss))
                     break
     except KeyboardInterrupt:
-        save_checkpoint(model, f'efficientdet-d{opt.compound_coef}_{epoch}_{step}.pth')
+        if opt.apex:
+            save_checkpoint(model, f'efficientdet-d{opt.compound_coef}_{epoch}_{step}.pth', optimizer, amp)
+        else:
+            save_checkpoint(model, f'efficientdet-d{opt.compound_coef}_{epoch}_{step}.pth')
         writer.close()
     writer.close()
 
@@ -319,6 +351,13 @@ def save_checkpoint(model, name):
     else:
         torch.save(model.model.state_dict(), os.path.join(opt.saved_path, name))
 
+def save_amp_checkpoint(model, name, optimizer, amp):
+    checkpoint = {
+        'model': model.model.state_dict(),
+        'optimizer': optimizer.state_dict(),
+        'amp': amp.state_dict()
+    }
+    torch.save(checkpoint, os.path.join(opt.saved_path, name))
 
 if __name__ == '__main__':
     opt = get_args()
