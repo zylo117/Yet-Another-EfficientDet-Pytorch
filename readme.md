@@ -147,7 +147,7 @@ Check out this [tutorial](tutorial/train_shape.ipynb) if you are new to this. Yo
     obj_list: ['person', 'bicycle', 'car', ...]
 
 
-## 3.a. Train on coco from scratch
+## 3.a. Train on coco from scratch(not necessary)
 
     # train efficientdet-d0 on coco from scratch 
     # with batchsize 12
@@ -159,7 +159,7 @@ Check out this [tutorial](tutorial/train_shape.ipynb) if you are new to this. Yo
     # The first few epoches will be rather unstable,
     # it's quite normal when you train from scratch.
     
-    python train.py -c 0 --batch_size 12
+    python train.py -c 0 --batch_size 64 --optim sgd --lr 8e-2
     
 ## 3.b. Train a custom dataset from scratch
     
