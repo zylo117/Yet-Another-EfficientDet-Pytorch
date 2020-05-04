@@ -52,6 +52,8 @@ Run this test on 2080Ti, Ubuntu 19.10 x64.
 ___
 # Update log
 
+[2020-05-04] fix coco category id mismatch bug, but it shouldn't affect training on custom dataset.
+
 [2020-04-14] fixed loss function bug. please pull the latest code.
 
 [2020-04-14] for those who needs help or can't get a good result after several epochs, check out this [tutorial](tutorial/train_shape.ipynb). You can run it on colab with GPU support.
