@@ -314,7 +314,7 @@ A3: Check out the update log if it's been fixed, then pull the latest code to tr
     
 # Visual Comparison
 
-Conclusion: They are providing almost the same precision.
+Conclusion: They are providing almost the same precision. Tips: set `force_input_size=1920`
 
 ## This Repo
 <img src="https://raw.githubusercontent.com/zylo117/Yet-Another-Efficient-Pytorch/master/test/img_inferred_d0_this_repo.jpg" width="640">
