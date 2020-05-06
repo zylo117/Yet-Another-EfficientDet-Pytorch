@@ -314,7 +314,7 @@ A3: Check out the update log if it's been fixed, then pull the latest code to tr
     
 # Visual Comparison
 
-Conclusion: They are providing almost the same precision. Tips: set `force_input_size=1920`
+Conclusion: They are providing almost the same precision. Tips: set `force_input_size=1920`. Official repo uses original image size while this repo uses default network input size. If you try to compare these two repos, you must make sure the input size is consistent.
 
 ## This Repo
 <img src="https://raw.githubusercontent.com/zylo117/Yet-Another-Efficient-Pytorch/master/test/img_inferred_d0_this_repo.jpg" width="640">
