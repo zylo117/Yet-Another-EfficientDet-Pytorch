@@ -64,7 +64,9 @@ def get_args():
     parser.add_argument('--saved_path', type=str, default='logs/')
     parser.add_argument('--debug', type=bool, default=False, help='whether visualize the predicted boxes of trainging, '
                                                                   'the output images will be in test/')
-    parser.add_argument('--apex', type=bool, default=False, help='Train using AMP with Apex')                                                                  
+    parser.add_argument('--apex', help='Train using AMP with Apex', action='store_true')
+    parser.add_argument('--opt_level', type=str, default='O1', help='Opt level for Apex AMP')
+    parser.add_argument('--clip_grad', type=float, default=10.0, help='Clip gradient norm used by clip_grad_norm_')                                                                  
 
     args = parser.parse_args()
     return args
@@ -138,9 +140,9 @@ def train(opt):
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, patience=3, verbose=True)
 
     if opt.apex:
-        # TODO: Parametrize opt_level
-        opt_level = 'O1'
-        model, optimizer = amp.initialize(model, optimizer, opt_level=opt_level)
+        model.cuda()
+        model.bifpn.cuda()
+        model, optimizer = amp.initialize(model, optimizer, opt_level=opt.opt_level)
 
     # load last weights
     if opt.load_weights is not None:
@@ -155,7 +157,7 @@ def train(opt):
 
         try:
             checkpoint = torch.load(weights_path)
-            if opt.apex and checkpoint['model'] is None:
+            if opt.apex and 'model' in checkpoint:
                 model.load_state_dict(checkpoint['model'])
                 optimizer.load_state_dict(checkpoint['optimizer'])
                 amp.load_state_dict(checkpoint['amp'])
@@ -176,7 +178,7 @@ def train(opt):
     if opt.head_only:
         def freeze_backbone(m):
             classname = m.__class__.__name__
-            for ntl in ['EfficientNet', 'BiFPN']:
+            for ntl in ['EfficientNet']:
                 if ntl in classname:
                     for param in m.parameters():
                         param.requires_grad = False
@@ -251,6 +253,7 @@ def train(opt):
                     if opt.apex:
                         with amp.scale_loss(loss, optimizer) as scaled_loss:
                             scaled_loss.backward()
+                        torch.nn.utils.clip_grad_norm_(amp.master_params(optimizer), opt.clip_grad)
                     else:
                         loss.backward()
 
@@ -275,7 +278,7 @@ def train(opt):
 
                     if step % opt.save_interval == 0 and step > 0:
                         if opt.apex:
-                            save_checkpoint(model, f'efficientdet-d{opt.compound_coef}_{epoch}_{step}.pth', optimizer, amp)
+                            save_amp_checkpoint(model, f'efficientdet-d{opt.compound_coef}_{epoch}_{step}.pth', optimizer, amp)
                         else:
                             save_checkpoint(model, f'efficientdet-d{opt.compound_coef}_{epoch}_{step}.pth')
                         print('checkpoint...')
@@ -326,7 +329,7 @@ def train(opt):
                     best_epoch = epoch
 
                     if opt.apex:
-                        save_checkpoint(model, f'efficientdet-d{opt.compound_coef}_{epoch}_{step}.pth', optimizer, amp)
+                        save_amp_checkpoint(model, f'efficientdet-d{opt.compound_coef}_{epoch}_{step}.pth', optimizer, amp)
                     else:
                         save_checkpoint(model, f'efficientdet-d{opt.compound_coef}_{epoch}_{step}.pth')
 
@@ -338,7 +341,7 @@ def train(opt):
                     break
     except KeyboardInterrupt:
         if opt.apex:
-            save_checkpoint(model, f'efficientdet-d{opt.compound_coef}_{epoch}_{step}.pth', optimizer, amp)
+            save_amp_checkpoint(model, f'efficientdet-d{opt.compound_coef}_{epoch}_{step}.pth', optimizer, amp)
         else:
             save_checkpoint(model, f'efficientdet-d{opt.compound_coef}_{epoch}_{step}.pth')
         writer.close()
