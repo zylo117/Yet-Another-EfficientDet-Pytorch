@@ -1,22 +1,21 @@
 # Yet Another EfficientDet Pytorch
 
-The pytorch re-implement of the official [EfficientDet](https://github.com/google/automl/tree/master/efficientdet) with SOTA performance in real time, original paper link: https://arxiv.org/abs/1911.09070
+The pytorch re-implement of the official [EfficientDet](https://github.com/google/automl/tree/master/efficientdet) with SOTA performance in real time, original paper link: <https://arxiv.org/abs/1911.09070>
 
-
-# Performance
+## Performance
 
 ## Pretrained weights and benchmark
 
-The performance is very close to the paper's, it is still SOTA. 
+The performance is very close to the paper's, it is still SOTA.
 
 The speed/FPS test includes the time of post-processing with no jit/data precision trick.
 
 | coefficient | pth_download | GPU Mem(MB) | FPS | Extreme FPS (Batchsize 32) | mAP 0.5:0.95(this repo) | mAP 0.5:0.95(paper) |
 | :-----: | :-----: | :------: | :------: | :------: | :-----: | :-----: |
-| D0 | [efficientdet-d0.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d0.pth) | 1049 | 36.20 | 163.14 | 32.6 | 33.8
-| D1 | [efficientdet-d1.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d1.pth) | 1159 | 29.69 | 63.08 | 38.2 | 39.6
-| D2 | [efficientdet-d2.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d2.pth) | 1321 | 26.50 | 40.99 | 41.5 | 43.0
-| D3 | [efficientdet-d3.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d3.pth) | 1647 | 22.73 | - | 44.9 | 45.8
+| D0 | [efficientdet-d0.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d0.pth) | 1049 | 36.20 | 163.14 | 33.1 | 33.8
+| D1 | [efficientdet-d1.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d1.pth) | 1159 | 29.69 | 63.08 | 38.8 | 39.6
+| D2 | [efficientdet-d2.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d2.pth) | 1321 | 26.50 | 40.99 | 42.1 | 43.0
+| D3 | [efficientdet-d3.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d3.pth) | 1647 | 22.73 | - | 45.6 | 45.8
 | D4 | [efficientdet-d4.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d4.pth) | 1903 | 14.75 | - | 48.1 | 49.4
 | D5 | [efficientdet-d5.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d5.pth) | 2255 | 7.11 | - | 49.5 | 50.7
 | D6 | [efficientdet-d6.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d6.pth) | 2985 | 5.30 | - | 50.1 | 51.7
@@ -26,9 +25,9 @@ The speed/FPS test includes the time of post-processing with no jit/data precisi
 
 This pure-pytorch implement is up to 2 times faster than the official Tensorflow version without any trick.
 
-Recorded on 2020-04-26, 
+Recorded on 2020-04-26,
 
-official git version: https://github.com/google/automl/commit/006668f2af1744de0357ca3d400527feaa73c122
+official git version: <https://github.com/google/automl/commit/006668f2af1744de0357ca3d400527feaa73c122>
 
 | coefficient | FPS(this repo, tested on RTX2080Ti) | FPS(official, tested on T4) |  Ratio |
 | :------: | :------: | :------: | :-----: |
@@ -41,16 +40,19 @@ official git version: https://github.com/google/automl/commit/006668f2af1744de03
 | D6 | 5.30 | 2.6 | 2.03X |
 | D7 | 3.73 | - | - |
 
-
 Test method (this repo):
 
 Run this test on 2080Ti, Ubuntu 19.10 x64.
+
 1. Prepare a image tensor with the same content, size (1,3,512,512)-pytorch.
 2. Initiate everything by inferring once.
 3. Run 10 times with batchsize 1 and calculate the average time, including post-processing and visualization, to make the test more practical.
 
 ___
-# Update log
+
+## Update Log
+
+[2020-05-10] replace nms with batched_nms to further improve mAP by 0.5~0.7, thanks @Laughing-q.
 
 [2020-05-04] fix coco category id mismatch bug, but it shouldn't affect training on custom dataset.
 
@@ -58,7 +60,7 @@ ___
 
 [2020-04-14] for those who needs help or can't get a good result after several epochs, check out this [tutorial](tutorial/train_shape.ipynb). You can run it on colab with GPU support.
 
-[2020-04-10] warp the loss function within the training model, so that the memory usage will be balanced when training with multiple gpus, enabling training with bigger batchsize. 
+[2020-04-10] warp the loss function within the training model, so that the memory usage will be balanced when training with multiple gpus, enabling training with bigger batchsize.
 
 [2020-04-10] add D7 (D6 with larger input size and larger anchor scale) support and test its mAP
 
@@ -75,8 +77,8 @@ ___
 [2020-04-06] adapt anchor strategies.
 
 [2020-04-05] create this repository.
- 
-# Demo
+
+## Demo
 
     # install requirements
     pip install pycocotools numpy opencv-python tqdm tensorboard tensorboardX pyyaml webcolors
@@ -86,13 +88,13 @@ ___
     # run the simple inference script
     python efficientdet_test.py
 
-# Training
+## Training
 
-Training EfficientDet is a painful and time-consuming task. You shouldn't expect to get a good result within a day or two. Please be patient. 
+Training EfficientDet is a painful and time-consuming task. You shouldn't expect to get a good result within a day or two. Please be patient.
 
 Check out this [tutorial](tutorial/train_shape.ipynb) if you are new to this. You can run it on colab with GPU support.
 
-## 1. Prepare your dataset
+### 1. Prepare your dataset
 
     # your dataset structure should be like this
     datasets/
@@ -120,8 +122,7 @@ Check out this [tutorial](tutorial/train_shape.ipynb) if you are new to this. Yo
                 -instances_train2017.json
                 -instances_val2017.json
 
-
-## 2. Manual set project's specific parameters
+### 2. Manual set project's specific parameters
 
     # create a yml file {your_project_name}.yml under 'projects'folder 
     # modify it following 'coco.yml'
@@ -146,8 +147,7 @@ Check out this [tutorial](tutorial/train_shape.ipynb) if you are new to this. Yo
     # for example, index of 'car' here is 2, while category_id of is 3
     obj_list: ['person', 'bicycle', 'car', ...]
 
-
-## 3.a. Train on coco from scratch(not necessary)
+### 3.a. Train on coco from scratch(not necessary)
 
     # train efficientdet-d0 on coco from scratch 
     # with batchsize 12
@@ -160,15 +160,15 @@ Check out this [tutorial](tutorial/train_shape.ipynb) if you are new to this. Yo
     # it's quite normal when you train from scratch.
     
     python train.py -c 0 --batch_size 64 --optim sgd --lr 8e-2
-    
-## 3.b. Train a custom dataset from scratch
-    
+
+### 3.b. Train a custom dataset from scratch
+
     # train efficientdet-d1 on a custom dataset 
     # with batchsize 8 and learning rate 1e-5
     
     python train.py -c 1 -p your_project_name --batch_size 8 --lr 1e-5
-    
-## 3.c. Train a custom dataset with pretrained weights (Highly Recommended)
+
+### 3.c. Train a custom dataset with pretrained weights (Highly Recommended)
 
     # train efficientdet-d2 on a custom dataset with pretrained weights
     # with batchsize 8 and learning rate 1e-5 for 10 epoches
@@ -182,13 +182,13 @@ Check out this [tutorial](tutorial/train_shape.ipynb) if you are new to this. Yo
     python train.py -c 2 -p your_project_name --batch_size 8 --lr 1e-5 --num_epochs 10 \
      --load_weights /path/to/your/weights/efficientdet-d2.pth \
      --head_only True
-     
-## 4. Early stopping a training session
-    
+
+### 4. Early stopping a training session
+
     # while training, press Ctrl+c, the program will catch KeyboardInterrupt
     # and stop training, save current checkpoint.
-    
-## 5. Resume training
+
+### 5. Resume training
 
     # let says you started a training session like this.
     
@@ -205,15 +205,15 @@ Check out this [tutorial](tutorial/train_shape.ipynb) if you are new to this. Yo
      --load_weights last \
      --head_only True
 
-## 6. Evaluate model performance
+### 6. Evaluate model performance
 
     # eval on your_project, efficientdet-d5
     
     python coco_eval.py -p your_project_name -c 5 \
      -w /path/to/your/weights
-     
-## 7. Debug training (optional)
-    
+
+### 7. Debug training (optional)
+
     # when you get bad result, you need to debug the training result.
     python train.py -c 2 -p your_project_name --batch_size 8 --lr 1e-5 --debug True
     
@@ -221,8 +221,8 @@ Check out this [tutorial](tutorial/train_shape.ipynb) if you are new to this. Yo
     # don't panic if you see countless of error boxes, it happens when the training is at early stage.
     # But if you still can't see a normal box after several epoches, not even one in all image,
     # then it's possible that either the anchors config is inappropriate or the ground truth is corrupted.
-    
-# TODO
+
+## TODO
 
 - [X] re-implement efficientdet
 - [X] adapt anchor strategies
@@ -231,7 +231,7 @@ Check out this [tutorial](tutorial/train_shape.ipynb) if you are new to this. Yo
 - [X] efficientdet D6 supports
 - [X] efficientdet D7 supports
 
-# FAQ:
+## FAQ
 
 **Q1. Why implement this while there are several efficientdet pytorch projects already.**
 
@@ -241,9 +241,9 @@ A1: Because AFAIK none of them fully recovers the true algorithm of the official
 
 A2: For example, these two are the most popular efficientdet-pytorch,
 
-https://github.com/toandaominh1997/EfficientDet.Pytorch
+<https://github.com/toandaominh1997/EfficientDet.Pytorch>
 
-https://github.com/signatrix/efficientdet
+<https://github.com/signatrix/efficientdet>
 
 Here is the issues and why these are difficult to achieve the same score as the official one:
 
@@ -269,7 +269,6 @@ The second one:
 
 8. Missing Conv/BN operations in BiFPN, Regressor and Classifier. This one is very tricky, if you don't dig deeper into the official implement, there are some same operations with different weights.
 
-        
         illustration of a minimal bifpn unit
             P7_0 -------------------------> P7_2 -------->
                |-------------|                ↑
@@ -284,14 +283,14 @@ The second one:
                |-------------|--------------↑ ↑
                              |--------------↓ |
             P3_0 -------------------------> P3_2 -------->
-        
-    For example, P4 will downchannel to P4_0, then it goes P4_1, 
+
+    For example, P4 will downchannel to P4_0, then it goes P4_1,
     anyone may takes it for granted that P4_0 goes to P4_2 directly, right?
-    
+
     That's why they are wrong, 
-    P4 should downchannel again with a different weights to P4_0_another, 
+    P4 should downchannel again with a different weights to P4_0_another,
     then it goes to P4_2.
-    
+
 And finally some common issues, their anchor decoder and encoder are different from the original one, but it's not the main reason that it performs badly.
 
 Also, Conv2dStaticSamePadding from [EfficientNet-PyTorch](https://github.com/lukemelas/EfficientNet-PyTorch) does not perform like TensorFlow, the padding strategy is different. So I implement a real tensorflow-style [Conv2dStaticSamePadding](efficientnet/utils_extra.py#L9) and [MaxPool2dStaticSamePadding](efficientnet/utils_extra.py#L55) myself.
@@ -304,27 +303,30 @@ Btw, debugging static-graph TensorFlow v1 is really painful. Don't try to export
 
 And even if you succeeded, like I did, you will have to deal with the crazy messed up machine-generated code under the same class that takes more time to refactor than translating it from scratch.
 
-**Q3: What should I do when I find a bug?** 
+**Q3: What should I do when I find a bug?**
 
 A3: Check out the update log if it's been fixed, then pull the latest code to try again. If it doesn't help, create a new issue and describe it in detail.
 
-# Known issues
+## Known issues
 
-1. Official EfficientDet use TensorFlow bilinear interpolation to resize image inputs, while it is different from many other methods (opencv/pytorch), so the output is definitely slightly different from the official one. 
-    
-# Visual Comparison
+1. Official EfficientDet use TensorFlow bilinear interpolation to resize image inputs, while it is different from many other methods (opencv/pytorch), so the output is definitely slightly different from the official one.
+
+## Visual Comparison
 
 Conclusion: They are providing almost the same precision. Tips: set `force_input_size=1920`. Official repo uses original image size while this repo uses default network input size. If you try to compare these two repos, you must make sure the input size is consistent.
 
-## This Repo
+### This Repo
+
 <img src="https://raw.githubusercontent.com/zylo117/Yet-Another-Efficient-Pytorch/master/test/img_inferred_d0_this_repo.jpg" width="640">
 
-## Official EfficientDet
+### Official EfficientDet
+
 <img src="https://raw.githubusercontent.com/zylo117/Yet-Another-Efficient-Pytorch/master/test/img_inferred_d0_official.jpg" width="640">
 
 ## References
 
 Appreciate the great work from the following repositories:
+
 - [google/automl](https://github.com/google/automl)
 - [lukemelas/EfficientNet-PyTorch](https://github.com/lukemelas/EfficientNet-PyTorch)
 - [signatrix/efficientdet](https://github.com/signatrix/efficientdet)

@@ -8,6 +8,7 @@ import torch
 from glob import glob
 from torch import nn
 from torchvision.ops import nms
+from torchvision.ops.boxes import batched_nms
 from typing import Union
 import uuid
 
@@ -94,7 +95,7 @@ def postprocess(x, anchors, regression, classification, regressBoxes, clipBoxes,
     scores_over_thresh = (scores > threshold)[:, :, 0]
     out = []
     for i in range(x.shape[0]):
-        if scores_over_thresh.sum() == 0:
+        if scores_over_thresh[i].sum() == 0:
             out.append({
                 'rois': np.array(()),
                 'class_ids': np.array(()),
@@ -105,10 +106,12 @@ def postprocess(x, anchors, regression, classification, regressBoxes, clipBoxes,
         classification_per = classification[i, scores_over_thresh[i, :], ...].permute(1, 0)
         transformed_anchors_per = transformed_anchors[i, scores_over_thresh[i, :], ...]
         scores_per = scores[i, scores_over_thresh[i, :], ...]
-        anchors_nms_idx = nms(transformed_anchors_per, scores_per[:, 0], iou_threshold=iou_threshold)
+        scores_, classes_ = classification_per.max(dim=0)
+        anchors_nms_idx = batched_nms(transformed_anchors_per, scores_per[:, 0], classes_, iou_threshold=iou_threshold)
 
         if anchors_nms_idx.shape[0] != 0:
-            scores_, classes_ = classification_per[:, anchors_nms_idx].max(dim=0)
+            classes_ = classes_[anchors_nms_idx]
+            scores_ = scores_[anchors_nms_idx]
             boxes_ = transformed_anchors_per[anchors_nms_idx, :]
 
             out.append({
