@@ -33,8 +33,8 @@ class Conv2dStaticSamePadding(nn.Module):
     def forward(self, x):
         h, w = x.shape[-2:]
         
-        extra_h = (w - 1) * self.stride[1] - w + self.kernel_size[1]
-        extra_v = (h - 1) * self.stride[0] - h + self.kernel_size[0]
+        extra_h = (math.ceil(w / self.stride[1]) - 1) * self.stride[1] - w + self.kernel_size[1]
+        extra_v = (math.ceil(h / self.stride[0]) - 1) * self.stride[0] - h + self.kernel_size[0]
         
         left = extra_h // 2
         right = extra_h - left
@@ -72,8 +72,8 @@ class MaxPool2dStaticSamePadding(nn.Module):
     def forward(self, x):
         h, w = x.shape[-2:]
         
-        extra_h = (w - 1) * self.stride[1] - w + self.kernel_size[1]
-        extra_v = (h - 1) * self.stride[0] - h + self.kernel_size[0]
+        extra_h = (math.ceil(w / self.stride[1]) - 1) * self.stride[1] - w + self.kernel_size[1]
+        extra_v = (math.ceil(h / self.stride[0]) - 1) * self.stride[0] - h + self.kernel_size[0]
 
         left = extra_h // 2
         right = extra_h - left
