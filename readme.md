@@ -52,6 +52,8 @@ ___
 
 ## Update Log
 
+[2020-05-11] add boolean string convertion to make sure head_only works
+
 [2020-05-10] replace nms with batched_nms to further improve mAP by 0.5~0.7, thanks [Laughing-q](https://github.com/Laughing-q).
 
 [2020-05-04] fix coco category id mismatch bug, but it shouldn't affect training on custom dataset.

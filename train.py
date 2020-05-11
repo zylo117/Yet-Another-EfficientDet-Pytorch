@@ -37,7 +37,7 @@ def get_args():
     parser.add_argument('-c', '--compound_coef', type=int, default=0, help='coefficients of efficientdet')
     parser.add_argument('-n', '--num_workers', type=int, default=12, help='num_workers of dataloader')
     parser.add_argument('--batch_size', type=int, default=12, help='The number of images per batch among all devices')
-    parser.add_argument('--head_only', type=bool, default=False,
+    parser.add_argument('--head_only', type=boolean_string, default=False,
                         help='whether finetunes only the regressor and the classifier, '
                              'useful in early stage convergence or small/easy dataset')
     parser.add_argument('--lr', type=float, default=1e-4)
@@ -56,11 +56,17 @@ def get_args():
     parser.add_argument('-w', '--load_weights', type=str, default=None,
                         help='whether to load weights from a checkpoint, set None to initialize, set \'last\' to load last checkpoint')
     parser.add_argument('--saved_path', type=str, default='logs/')
-    parser.add_argument('--debug', type=bool, default=False, help='whether visualize the predicted boxes of trainging, '
+    parser.add_argument('--debug', type=boolean_string, default=False, help='whether visualize the predicted boxes of trainging, '
                                                                   'the output images will be in test/')
 
     args = parser.parse_args()
     return args
+
+
+def boolean_string(s):
+    if s not in {'False', 'True'}:
+        raise ValueError('Not a valid boolean string')
+    return s == 'True'
 
 
 class ModelWithLoss(nn.Module):
