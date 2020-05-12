@@ -58,6 +58,8 @@ def get_args():
     parser.add_argument('--saved_path', type=str, default='logs/')
     parser.add_argument('--debug', type=boolean_string, default=False, help='whether visualize the predicted boxes of trainging, '
                                                                   'the output images will be in test/')
+    parser.add_argument('--matched_threshold', type=float, default=.5, help='Threshold for positive matches.')
+    parser.add_argument('--unmatched_threshold', type=float, default=.4, help='Threshold for negative matches.')
 
     args = parser.parse_args()
     return args
@@ -70,9 +72,9 @@ def boolean_string(s):
 
 
 class ModelWithLoss(nn.Module):
-    def __init__(self, model, debug=False):
+    def __init__(self, model, matched_threshold=0.5, unmatched_threshold=0.4, debug=False):
         super().__init__()
-        self.criterion = FocalLoss()
+        self.criterion = FocalLoss(matched_threshold=matched_threshold, unmatched_threshold=unmatched_threshold)
         self.model = model
         self.debug = debug
 
@@ -181,7 +183,7 @@ def train(opt):
     writer = SummaryWriter(opt.log_path + f'/{datetime.datetime.now().strftime("%Y%m%d-%H%M%S")}/')
 
     # warp the model with loss function, to reduce the memory usage on gpu0 and speedup
-    model = ModelWithLoss(model, debug=opt.debug)
+    model = ModelWithLoss(model, matched_threshold=opt.matched_threshold, unmatched_threshold=opt.unmatched_threshold, debug=opt.debug)
 
     if params.num_gpus > 0:
         model = model.cuda()

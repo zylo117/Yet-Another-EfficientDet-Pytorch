@@ -25,8 +25,11 @@ def calc_iou(a, b):
 
 
 class FocalLoss(nn.Module):
-    def __init__(self):
+    def __init__(self, matched_threshold=0.5, unmatched_threshold=0.4, negatives_lower_than_unmatched=True):
         super(FocalLoss, self).__init__()
+        self.matched_threshold = matched_threshold
+        self.unmatched_threshold = unmatched_threshold
+        self.negatives_lower_than_unmatched = negatives_lower_than_unmatched
 
     def forward(self, classifications, regressions, anchors, annotations, **kwargs):
         alpha = 0.25
@@ -53,35 +56,23 @@ class FocalLoss(nn.Module):
 
             classification = torch.clamp(classification, 1e-4, 1.0 - 1e-4)
             
-            if bbox_annotation.shape[0] == 0:
-                if torch.cuda.is_available():
-                    
-                    alpha_factor = torch.ones_like(classification) * alpha
+            if len(bbox_annotation) == 0:  # No annotations
+                alpha_factor = torch.ones_like(classification) * alpha
+                if torch.cuda.is_available():                  
                     alpha_factor = alpha_factor.cuda()
-                    alpha_factor = 1. - alpha_factor
-                    focal_weight = classification
-                    focal_weight = alpha_factor * torch.pow(focal_weight, gamma)
+                alpha_factor = 1. - alpha_factor
+                focal_weight = classification
+                focal_weight = alpha_factor * torch.pow(focal_weight, gamma)
                     
-                    bce = -(torch.log(1.0 - classification))
+                bce = -(torch.log(1.0 - classification))
                     
-                    cls_loss = focal_weight * bce
-                    
+                cls_loss = focal_weight * bce
+                if torch.cuda.is_available():        
                     regression_losses.append(torch.tensor(0).to(dtype).cuda())
-                    classification_losses.append(cls_loss.sum())
                 else:
-                    
-                    alpha_factor = torch.ones_like(classification) * alpha
-                    alpha_factor = 1. - alpha_factor
-                    focal_weight = classification
-                    focal_weight = alpha_factor * torch.pow(focal_weight, gamma)
-                    
-                    bce = -(torch.log(1.0 - classification))
-                    
-                    cls_loss = focal_weight * bce
-                    
                     regression_losses.append(torch.tensor(0).to(dtype))
-                    classification_losses.append(cls_loss.sum())
-
+                    
+                classification_losses.append(cls_loss.sum())
                 continue
                 
             IoU = calc_iou(anchor[:, :], bbox_annotation[:, :4])
@@ -89,16 +80,23 @@ class FocalLoss(nn.Module):
             IoU_max, IoU_argmax = torch.max(IoU, dim=1)
 
             # compute the loss for classification
-            targets = torch.ones_like(classification) * -1
+            targets = torch.ones_like(classification) * -1  # init by ignoring all targets
             if torch.cuda.is_available():
                 targets = targets.cuda()
 
-            targets[torch.lt(IoU_max, 0.4), :] = 0
+            if self.negatives_lower_than_unmatched:  
+                # negative matches are the ones below the unmatched_threshold
+                targets[torch.lt(IoU_max, self.unmatched_threshold), :] = 0
+            else:  
+                # negative matches are in between the matched and unmatched
+                targets[torch.lt(IoU_max, self.matched_threshold) & torch.ge(IoU_max, self.unmatched_threshold), :] = 0
 
-            positive_indices = torch.ge(IoU_max, 0.5)
+            # Find all positives in a batch for normalization 
+            positive_indices = torch.ge(IoU_max, self.matched_threshold)
 
-            num_positive_anchors = positive_indices.sum()
-
+            # Avoid zero sum of num_positives, which would lead to inf loss during training
+            num_positive_anchors = positive_indices.sum() + 1 
+            # print(num_positive_anchors)
             assigned_annotations = bbox_annotation[IoU_argmax, :]
 
             targets[positive_indices, :] = 0
