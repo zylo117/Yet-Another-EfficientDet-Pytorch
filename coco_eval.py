@@ -82,11 +82,11 @@ def evaluate_coco(img_path, set_name, image_ids, coco, model, threshold=0.05):
                             anchors, regression, classification,
                             regressBoxes, clipBoxes,
                             threshold, nms_threshold)
-
-        processed_image_ids.append(image_id)
-
+        
         if not preds:
             continue
+
+        processed_image_ids.append(image_id)
 
         preds = invert_affine(framed_metas, preds)[0]
 
