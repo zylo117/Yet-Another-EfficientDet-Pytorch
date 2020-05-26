@@ -106,8 +106,6 @@ def evaluate_coco(img_path, set_name, image_ids, coco, model, threshold=0.05):
                 label = int(class_ids[roi_id])
                 box = rois[roi_id, :]
 
-                if score < threshold:
-                    break
                 image_result = {
                     'image_id': image_id,
                     'category_id': label + 1,
