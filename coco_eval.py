@@ -54,7 +54,6 @@ input_sizes = [512, 640, 768, 896, 1024, 1280, 1280, 1536]
 
 def evaluate_coco(img_path, set_name, image_ids, coco, model, threshold=0.05):
     results = []
-    processed_image_ids = []
 
     regressBoxes = BBoxTransform()
     clipBoxes = ClipBoxes()
@@ -85,8 +84,6 @@ def evaluate_coco(img_path, set_name, image_ids, coco, model, threshold=0.05):
         
         if not preds:
             continue
-
-        processed_image_ids.append(image_id)
 
         preds = invert_affine(framed_metas, preds)[0]
 
@@ -124,8 +121,6 @@ def evaluate_coco(img_path, set_name, image_ids, coco, model, threshold=0.05):
         os.remove(filepath)
     json.dump(results, open(filepath, 'w'), indent=4)
 
-    return processed_image_ids
-
 
 def _eval(coco_gt, image_ids, pred_json_path):
     # load results in COCO evaluation tool
@@ -161,6 +156,6 @@ if __name__ == '__main__':
             if use_float16:
                 model.half()
 
-        image_ids = evaluate_coco(VAL_IMGS, SET_NAME, image_ids, coco_gt, model)
+        evaluate_coco(VAL_IMGS, SET_NAME, image_ids, coco_gt, model)
 
     _eval(coco_gt, image_ids, f'{SET_NAME}_bbox_results.json')
