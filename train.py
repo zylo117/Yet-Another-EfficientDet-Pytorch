@@ -36,6 +36,7 @@ def get_args():
     parser.add_argument('-p', '--project', type=str, default='coco', help='project file that contains parameters')
     parser.add_argument('-c', '--compound_coef', type=int, default=0, help='coefficients of efficientdet')
     parser.add_argument('-n', '--num_workers', type=int, default=12, help='num_workers of dataloader')
+    parser.add_argument('-s', '--seed', type=int, default=42, help='the random seed for initialization')
     parser.add_argument('--batch_size', type=int, default=12, help='The number of images per batch among all devices')
     parser.add_argument('--head_only', type=boolean_string, default=False,
                         help='whether finetunes only the regressor and the classifier, '
@@ -89,13 +90,13 @@ class ModelWithLoss(nn.Module):
 def train(opt):
     params = Params(f'projects/{opt.project}.yml')
 
-    if params.num_gpus == 0:
-        os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    num_gpus = torch.cuda.device_count();
 
     if torch.cuda.is_available():
-        torch.cuda.manual_seed(42)
+        torch.cuda.manual_seed(opt.seed)
     else:
-        torch.manual_seed(42)
+        torch.manual_seed(opt.seed)
 
     opt.saved_path = opt.saved_path + f'/{params.project_name}/'
     opt.log_path = opt.log_path + f'/{params.project_name}/tensorboard/'
@@ -172,7 +173,7 @@ def train(opt):
     # apply sync_bn can solve it,
     # by packing all mini-batch across all gpus as one batch and normalize, then send it back to all gpus.
     # but it would also slow down the training by a little bit.
-    if params.num_gpus > 1 and opt.batch_size // params.num_gpus < 4:
+    if num_gpus > 1 and opt.batch_size // num_gpus < 4:
         model.apply(replace_w_sync_bn)
         use_sync_bn = True
     else:
@@ -183,12 +184,11 @@ def train(opt):
     # warp the model with loss function, to reduce the memory usage on gpu0 and speedup
     model = ModelWithLoss(model, debug=opt.debug)
 
-    if params.num_gpus > 0:
-        model = model.cuda()
-        if params.num_gpus > 1:
-            model = CustomDataParallel(model, params.num_gpus)
-            if use_sync_bn:
-                patch_replication_callback(model)
+    model = model.to(device)                  
+    if num_gpus > 1:
+        model = CustomDataParallel(model, num_gpus)
+        if use_sync_bn:
+            patch_replication_callback(model)
 
     if opt.optim == 'adamw':
         optimizer = torch.optim.AdamW(model.parameters(), opt.lr)
@@ -200,7 +200,7 @@ def train(opt):
     epoch = 0
     best_loss = 1e5
     best_epoch = 0
-    step = max(0, last_step)
+    step = max(0, last_step)                      
     model.train()
 
     num_iter_per_epoch = len(training_generator)
@@ -218,14 +218,10 @@ def train(opt):
                     progress_bar.update()
                     continue
                 try:
-                    imgs = data['img']
-                    annot = data['annot']
-
-                    if params.num_gpus == 1:
-                        # if only one gpu, just send it to cuda:0
-                        # elif multiple gpus, send it to multiple gpus in CustomDataParallel, not here
-                        imgs = imgs.cuda()
-                        annot = annot.cuda()
+                    # if only one gpu, just send it to cuda:0
+                    # elif multiple gpus, send it to multiple gpus in CustomDataParallel, not here
+                    imgs = data['img'].to(device)
+                    annot = data['annot'].to(device)
 
                     optimizer.zero_grad()
                     cls_loss, reg_loss = model(imgs, annot, obj_list=params.obj_list)
@@ -272,13 +268,10 @@ def train(opt):
                 loss_classification_ls = []
                 for iter, data in enumerate(val_generator):
                     with torch.no_grad():
-                        imgs = data['img']
-                        annot = data['annot']
-
-                        if params.num_gpus == 1:
-                            imgs = imgs.cuda()
-                            annot = annot.cuda()
-
+                        imgs = data['img'].to(device)
+                        annot = data['annot'].to(device)
+                           
+                           
                         cls_loss, reg_loss = model(imgs, annot, obj_list=params.obj_list)
                         cls_loss = cls_loss.mean()
                         reg_loss = reg_loss.mean()
