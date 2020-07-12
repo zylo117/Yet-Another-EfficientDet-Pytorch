@@ -311,7 +311,6 @@ class Regressor(nn.Module):
     def __init__(self, in_channels, num_anchors, num_layers, onnx_export=False):
         super(Regressor, self).__init__()
         self.num_layers = num_layers
-        self.num_layers = num_layers
 
         self.conv_list = nn.ModuleList(
             [SeparableConvBlock(in_channels, in_channels, norm=False, activation=False) for i in range(num_layers)])
