@@ -22,17 +22,17 @@ from pycocotools.cocoeval import COCOeval
 
 from backbone import EfficientDetBackbone
 from efficientdet.utils import BBoxTransform, ClipBoxes
-from utils.utils import preprocess, invert_affine, postprocess
+from utils.utils import preprocess, invert_affine, postprocess, boolean_string
 
 ap = argparse.ArgumentParser()
 ap.add_argument('-p', '--project', type=str, default='coco', help='project file that contains parameters')
 ap.add_argument('-c', '--compound_coef', type=int, default=0, help='coefficients of efficientdet')
 ap.add_argument('-w', '--weights', type=str, default=None, help='/path/to/weights')
 ap.add_argument('--nms_threshold', type=float, default=0.5, help='nms threshold, don\'t change it if not for testing purposes')
-ap.add_argument('--cuda', type=bool, default=True)
+ap.add_argument('--cuda', type=boolean_string, default=True)
 ap.add_argument('--device', type=int, default=0)
-ap.add_argument('--float16', type=bool, default=False)
-ap.add_argument('--override', type=bool, default=True, help='override previous bbox results file if exists')
+ap.add_argument('--float16', type=boolean_string, default=False)
+ap.add_argument('--override', type=boolean_string, default=True, help='override previous bbox results file if exists')
 args = ap.parse_args()
 
 compound_coef = args.compound_coef
@@ -49,7 +49,7 @@ print(f'running coco-style evaluation on project {project_name}, weights {weight
 params = yaml.safe_load(open(f'projects/{project_name}.yml'))
 obj_list = params['obj_list']
 
-input_sizes = [512, 640, 768, 896, 1024, 1280, 1280, 1536]
+input_sizes = [512, 640, 768, 896, 1024, 1280, 1280, 1536, 1536]
 
 
 def evaluate_coco(img_path, set_name, image_ids, coco, model, threshold=0.05):

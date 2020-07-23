@@ -2,25 +2,25 @@
 # adapted from https://github.com/signatrix/efficientdet/blob/master/train.py
 # modified by Zylo117
 
+import argparse
 import datetime
 import os
-import argparse
 import traceback
 
+import numpy as np
 import torch
 import yaml
+from tensorboardX import SummaryWriter
 from torch import nn
 from torch.utils.data import DataLoader
 from torchvision import transforms
-from efficientdet.dataset import CocoDataset, Resizer, Normalizer, Augmenter, collater
-from backbone import EfficientDetBackbone
-from tensorboardX import SummaryWriter
-import numpy as np
 from tqdm.autonotebook import tqdm
 
+from backbone import EfficientDetBackbone
+from efficientdet.dataset import CocoDataset, Resizer, Normalizer, Augmenter, collater
 from efficientdet.loss import FocalLoss
 from utils.sync_batchnorm import patch_replication_callback
-from utils.utils import replace_w_sync_bn, CustomDataParallel, get_last_weights, init_weights
+from utils.utils import replace_w_sync_bn, CustomDataParallel, get_last_weights, init_weights, boolean_string
 
 
 class Params:
@@ -56,17 +56,12 @@ def get_args():
     parser.add_argument('-w', '--load_weights', type=str, default=None,
                         help='whether to load weights from a checkpoint, set None to initialize, set \'last\' to load last checkpoint')
     parser.add_argument('--saved_path', type=str, default='logs/')
-    parser.add_argument('--debug', type=boolean_string, default=False, help='whether visualize the predicted boxes of training, '
-                                                                  'the output images will be in test/')
+    parser.add_argument('--debug', type=boolean_string, default=False,
+                        help='whether visualize the predicted boxes of training, '
+                             'the output images will be in test/')
 
     args = parser.parse_args()
     return args
-
-
-def boolean_string(s):
-    if s not in {'False', 'True'}:
-        raise ValueError('Not a valid boolean string')
-    return s == 'True'
 
 
 class ModelWithLoss(nn.Module):
@@ -308,7 +303,7 @@ def train(opt):
                     save_checkpoint(model, f'efficientdet-d{opt.compound_coef}_{epoch}_{step}.pth')
 
                 model.train()
-                           
+
                 # Early stopping
                 if epoch - best_epoch > opt.es_patience > 0:
                     print('[Info] Stop training at epoch {}. The lowest loss achieved is {}'.format(epoch, best_loss))
