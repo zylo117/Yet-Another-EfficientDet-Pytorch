@@ -20,7 +20,7 @@ The speed/FPS test includes the time of post-processing with no jit/data precisi
 | D5 | [efficientdet-d5.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d5.pth) | 2255 | 7.11 | - | 50.2 | 50.7
 | D6 | [efficientdet-d6.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.0/efficientdet-d6.pth) | 2985 | 5.30 | - | 50.7 | 51.7
 | D7 | [efficientdet-d7.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.2/efficientdet-d7.pth) | 3819 | 3.73 | - | 52.7 | 53.7
-| D7X | [efficientdet-d7x.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.2/efficientdet-d7x.pth) | 3983 | 2.39 | - | 53.9 | 55.1
+| D7X | [efficientdet-d8.pth](https://github.com/zylo117/Yet-Another-Efficient-Pytorch/releases/download/1.2/efficientdet-d8.pth) | 3983 | 2.39 | - | 53.9 | 55.1
 
 ## Speed Test
 
@@ -53,7 +53,7 @@ ___
 
 ## Update Log
 
-[2020-07-23] supports efficientdet-d7x, mAP 53.9, using efficientnet-b7 as its backbone and an extra deeper pyramid level of BiFPN.
+[2020-07-23] supports efficientdet-d7x, mAP 53.9, using efficientnet-b7 as its backbone and an extra deeper pyramid level of BiFPN. For the sake of simplicity, let's call it efficientdet-d8.
 
 [2020-07-15] update efficientdet-d7 weights, mAP 52.7
 
