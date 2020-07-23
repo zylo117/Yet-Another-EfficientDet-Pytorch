@@ -178,4 +178,4 @@ class FocalLoss(nn.Module):
             display(out, imgs, obj_list, imshow=False, imwrite=True)
 
         return torch.stack(classification_losses).mean(dim=0, keepdim=True), \
-               torch.stack(regression_losses).mean(dim=0, keepdim=True)
+               torch.stack(regression_losses).mean(dim=0, keepdim=True) * 50  # https://github.com/google/automl/blob/6fdd1de778408625c1faf368a327fe36ecd41bf7/efficientdet/hparams_config.py#L233
