@@ -57,7 +57,8 @@ class BiFPN(nn.Module):
     modified by Zylo117
     """
 
-    def __init__(self, num_channels, conv_channels, first_time=False, epsilon=1e-4, onnx_export=False, attention=True):
+    def __init__(self, num_channels, conv_channels, first_time=False, epsilon=1e-4, onnx_export=False, attention=True,
+                 use_p8=False):
         """
 
         Args:
@@ -70,6 +71,8 @@ class BiFPN(nn.Module):
         """
         super(BiFPN, self).__init__()
         self.epsilon = epsilon
+        self.use_p8 = use_p8
+
         # Conv layers
         self.conv6_up = SeparableConvBlock(num_channels, onnx_export=onnx_export)
         self.conv5_up = SeparableConvBlock(num_channels, onnx_export=onnx_export)
@@ -79,6 +82,9 @@ class BiFPN(nn.Module):
         self.conv5_down = SeparableConvBlock(num_channels, onnx_export=onnx_export)
         self.conv6_down = SeparableConvBlock(num_channels, onnx_export=onnx_export)
         self.conv7_down = SeparableConvBlock(num_channels, onnx_export=onnx_export)
+        if use_p8:
+            self.conv7_up = SeparableConvBlock(num_channels, onnx_export=onnx_export)
+            self.conv8_down = SeparableConvBlock(num_channels, onnx_export=onnx_export)
 
         # Feature scaling layers
         self.p6_upsample = nn.Upsample(scale_factor=2, mode='nearest')
@@ -90,6 +96,9 @@ class BiFPN(nn.Module):
         self.p5_downsample = MaxPool2dStaticSamePadding(3, 2)
         self.p6_downsample = MaxPool2dStaticSamePadding(3, 2)
         self.p7_downsample = MaxPool2dStaticSamePadding(3, 2)
+        if use_p8:
+            self.p7_upsample = nn.Upsample(scale_factor=2, mode='nearest')
+            self.p8_downsample = MaxPool2dStaticSamePadding(3, 2)
 
         self.swish = MemoryEfficientSwish() if not onnx_export else Swish()
 
@@ -116,6 +125,10 @@ class BiFPN(nn.Module):
             self.p6_to_p7 = nn.Sequential(
                 MaxPool2dStaticSamePadding(3, 2)
             )
+            if use_p8:
+                self.p7_to_p8 = nn.Sequential(
+                    MaxPool2dStaticSamePadding(3, 2)
+                )
 
             self.p4_down_channel_2 = nn.Sequential(
                 Conv2dStaticSamePadding(conv_channels[1], num_channels, 1),
@@ -172,11 +185,11 @@ class BiFPN(nn.Module):
         # elif later phase, upsample to target phase's by nearest interpolation
 
         if self.attention:
-            p3_out, p4_out, p5_out, p6_out, p7_out = self._forward_fast_attention(inputs)
+            outs = self._forward_fast_attention(inputs)
         else:
-            p3_out, p4_out, p5_out, p6_out, p7_out = self._forward(inputs)
+            outs = self._forward(inputs)
 
-        return p3_out, p4_out, p5_out, p6_out, p7_out
+        return outs
 
     def _forward_fast_attention(self, inputs):
         if self.first_time:
@@ -258,19 +271,34 @@ class BiFPN(nn.Module):
 
             p6_in = self.p5_to_p6(p5)
             p7_in = self.p6_to_p7(p6_in)
+            if self.use_p8:
+                p8_in = self.p7_to_p8(p7_in)
 
             p3_in = self.p3_down_channel(p3)
             p4_in = self.p4_down_channel(p4)
             p5_in = self.p5_down_channel(p5)
 
         else:
-            # P3_0, P4_0, P5_0, P6_0 and P7_0
-            p3_in, p4_in, p5_in, p6_in, p7_in = inputs
+            if self.use_p8:
+                # P3_0, P4_0, P5_0, P6_0, P7_0 and P8_0
+                p3_in, p4_in, p5_in, p6_in, p7_in, p8_in = inputs
+            else:
+                # P3_0, P4_0, P5_0, P6_0 and P7_0
+                p3_in, p4_in, p5_in, p6_in, p7_in = inputs
 
-        # P7_0 to P7_2
+        if self.use_p8:
+            # P8_0 to P8_2
 
-        # Connections for P6_0 and P7_0 to P6_1 respectively
-        p6_up = self.conv6_up(self.swish(p6_in + self.p6_upsample(p7_in)))
+            # Connections for P7_0 and P8_0 to P7_1 respectively
+            p7_up = self.conv7_up(self.swish(p7_in + self.p7_upsample(p8_in)))
+
+            # Connections for P6_0 and P7_0 to P6_1 respectively
+            p6_up = self.conv6_up(self.swish(p6_in + self.p6_upsample(p7_up)))
+        else:
+            # P7_0 to P7_2
+
+            # Connections for P6_0 and P7_0 to P6_1 respectively
+            p6_up = self.conv6_up(self.swish(p6_in + self.p6_upsample(p7_in)))
 
         # Connections for P5_0 and P6_1 to P5_1 respectively
         p5_up = self.conv5_up(self.swish(p5_in + self.p5_upsample(p6_up)))
@@ -297,10 +325,20 @@ class BiFPN(nn.Module):
         p6_out = self.conv6_down(
             self.swish(p6_in + p6_up + self.p6_downsample(p5_out)))
 
-        # Connections for P7_0 and P6_2 to P7_2
-        p7_out = self.conv7_down(self.swish(p7_in + self.p7_downsample(p6_out)))
+        if self.use_p8:
+            # Connections for P7_0, P7_1 and P6_2 to P7_2 respectively
+            p7_out = self.conv7_down(
+                self.swish(p7_in + p7_up + self.p7_downsample(p6_out)))
 
-        return p3_out, p4_out, p5_out, p6_out, p7_out
+            # Connections for P8_0 and P7_2 to P8_2
+            p8_out = self.conv8_down(self.swish(p8_in + self.p8_downsample(p7_out)))
+
+            return p3_out, p4_out, p5_out, p6_out, p7_out, p8_out
+        else:
+            # Connections for P7_0 and P6_2 to P7_2
+            p7_out = self.conv7_down(self.swish(p7_in + self.p7_downsample(p6_out)))
+
+            return p3_out, p4_out, p5_out, p6_out, p7_out
 
 
 class Regressor(nn.Module):
@@ -308,7 +346,7 @@ class Regressor(nn.Module):
     modified by Zylo117
     """
 
-    def __init__(self, in_channels, num_anchors, num_layers, onnx_export=False):
+    def __init__(self, in_channels, num_anchors, num_layers, pyramid_levels=5, onnx_export=False):
         super(Regressor, self).__init__()
         self.num_layers = num_layers
 
@@ -316,7 +354,7 @@ class Regressor(nn.Module):
             [SeparableConvBlock(in_channels, in_channels, norm=False, activation=False) for i in range(num_layers)])
         self.bn_list = nn.ModuleList(
             [nn.ModuleList([nn.BatchNorm2d(in_channels, momentum=0.01, eps=1e-3) for i in range(num_layers)]) for j in
-             range(5)])
+             range(pyramid_levels)])
         self.header = SeparableConvBlock(in_channels, num_anchors * 4, norm=False, activation=False)
         self.swish = MemoryEfficientSwish() if not onnx_export else Swish()
 
@@ -344,7 +382,7 @@ class Classifier(nn.Module):
     modified by Zylo117
     """
 
-    def __init__(self, in_channels, num_anchors, num_classes, num_layers, onnx_export=False):
+    def __init__(self, in_channels, num_anchors, num_classes, num_layers, pyramid_levels=5, onnx_export=False):
         super(Classifier, self).__init__()
         self.num_anchors = num_anchors
         self.num_classes = num_classes
@@ -353,7 +391,7 @@ class Classifier(nn.Module):
             [SeparableConvBlock(in_channels, in_channels, norm=False, activation=False) for i in range(num_layers)])
         self.bn_list = nn.ModuleList(
             [nn.ModuleList([nn.BatchNorm2d(in_channels, momentum=0.01, eps=1e-3) for i in range(num_layers)]) for j in
-             range(5)])
+             range(pyramid_levels)])
         self.header = SeparableConvBlock(in_channels, num_anchors * num_classes, norm=False, activation=False)
         self.swish = MemoryEfficientSwish() if not onnx_export else Swish()
 

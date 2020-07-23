@@ -45,7 +45,7 @@ obj_list = ['person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus', 'train'
 
 color_list = standard_to_bgr(STANDARD_COLORS)
 # tf bilinear interpolation is different from any other's, just make do
-input_sizes = [512, 640, 768, 896, 1024, 1280, 1280, 1536]
+input_sizes = [512, 640, 768, 896, 1024, 1280, 1280, 1536, 1536]
 input_size = input_sizes[compound_coef] if force_input_size is None else force_input_size
 ori_imgs, framed_imgs, framed_metas = preprocess(img_path, max_size=input_size)
 
