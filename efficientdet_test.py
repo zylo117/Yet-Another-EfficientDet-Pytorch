@@ -58,10 +58,7 @@ x = x.to(torch.float32 if not use_float16 else torch.float16).permute(0, 3, 1, 2
 
 model = EfficientDetBackbone(compound_coef=compound_coef, num_classes=len(obj_list),
                              ratios=anchor_ratios, scales=anchor_scales)
-if use_cuda:
-    model.load_state_dict(torch.load(f'weights/efficientdet-d{compound_coef}.pth'))
-else:
-    model.load_state_dict(torch.load(f'weights/efficientdet-d{compound_coef}.pth', map_location=torch.device('cpu')))
+model.load_state_dict(torch.load(f'weights/efficientdet-d{compound_coef}.pth', map_location='cpu'))
 model.requires_grad_(False)
 model.eval()
 
