@@ -83,6 +83,8 @@ def display(preds, imgs, imshow=True, imwrite=False):
         if len(preds[i]['rois']) == 0:
             continue
 
+        imgs[i] = imgs[i].copy()
+
         for j in range(len(preds[i]['rois'])):
             x1, y1, x2, y2 = preds[i]['rois'][j].astype(np.int)
             obj = obj_list[preds[i]['class_ids'][j]]
