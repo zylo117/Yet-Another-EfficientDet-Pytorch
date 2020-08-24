@@ -1,0 +1,12 @@
+setuptools>=41.0.0
+pycocotools
+scikit-build
+numpy 
+opencv-python 
+tqdm 
+tensorboard 
+tensorboardX 
+pyyaml 
+webcolors
+torch==1.4.0
+torchvision==0.5.0
