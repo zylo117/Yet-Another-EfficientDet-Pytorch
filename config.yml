@@ -1,0 +1,15 @@
+image_dir: "/home/bishwarup/EV/v0.2.1/datasets/images/"
+train_annotations: "/home/bishwarup/EV/v0.2.1/datasets/annotations/train_merged.json"
+val_annotations: "/home/bishwarup/EV/v0.2.1/datasets/annotations/val_merged.json"
+logdir: "/home/bishwarup/EV/v0.2.1/efficientdet/run0"
+num_gpus: 1
+
+# mean and std in RGB order, actually this part should remain unchanged as long as your dataset is similar to coco.
+mean: [0.485, 0.456, 0.406]
+std: [0.229, 0.224, 0.225]
+
+# this anchor is adapted to the dataset
+anchors_scales: '[2 ** 0, 2 ** (1.0 / 3.0), 2 ** (2.0 / 3.0)]'
+anchors_ratios: '[(1.0, 1.0), (1.4, 0.7), (0.7, 1.4)]'
+
+obj_list: ['hail']
