@@ -27,6 +27,8 @@ from utils.utils import (
     init_weights,
     boolean_string,
 )
+from coco_eval_train import eval_valid
+
 
 
 class Params:
@@ -383,6 +385,24 @@ def train(opt):
                 writer.add_scalars("Loss", {"val": loss}, step)
                 writer.add_scalars("Regression_loss", {"val": reg_loss}, step)
                 writer.add_scalars("Classfication_loss", {"val": cls_loss}, step)
+
+                #model.eval()
+                nms_threshold = 0.5
+                use_cuda = True if torch.cuda.is_available() else False
+                use_float16 = False
+                override_prev_results = True
+                project_name = opt.project
+                confidence = 0.05
+                eval_valid(opt.data_path,
+                          opt.compound_coef,
+                          model,
+                          nms_threshold,
+                          use_cuda,
+                          use_float16,
+                          override_prev_results,
+                          project_name,
+                          confidence)
+
 
                 if loss + opt.es_min_delta < best_loss:
                     best_loss = loss
