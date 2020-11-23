@@ -5,7 +5,7 @@ with open('readme.md') as readme_file:
 with open('requirements.txt', 'r') as fh:
     requirements = fh.read().split('\n')
 setup(
-    name='yet_another_efficientdet',
+    name='Yet-Another-EfficientDet-Pytorch',
     version='0.1.0',
     py_modules=['backbone'],
     packages=find_packages(include=['efficientdet', 'efficientdet.*', 'efficientnet', 'efficientnet.*', 'backbone', 'utils', 'utils.*']),
