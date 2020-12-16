@@ -2,7 +2,7 @@
 
 The pytorch re-implement of the official [EfficientDet](https://github.com/google/automl/tree/master/efficientdet) with SOTA performance in real time, original paper link: <https://arxiv.org/abs/1911.09070>
 
-## Let's interact
+## Having troubles training? I might train it for you
 
 If you have troubles training a dataset, and if you are willing to share your dataset with the public or it's open already, post it on Issues with `help wanted` tag, I might try to help train it for you, if I'm free, which is not guaranteed.
 
