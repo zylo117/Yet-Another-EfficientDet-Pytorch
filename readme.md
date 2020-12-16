@@ -8,7 +8,7 @@ If you have troubles training a dataset, and if you are willing to share your da
 
 Requirements:
 
-1. The total number of the image of the dataset should not be larger than 10K, and its capacity should be under 5GB.
+1. The total number of the image of the dataset should not be larger than 10K, capacity should be under 5GB, and it should be free to download, i.e. baiduyun.
 
 2. The dataset should be in the format of this repo.
 
