@@ -2,6 +2,27 @@
 
 The pytorch re-implement of the official [EfficientDet](https://github.com/google/automl/tree/master/efficientdet) with SOTA performance in real time, original paper link: <https://arxiv.org/abs/1911.09070>
 
+## Let's interact
+
+If you have troubles training a dataset, and if you are willing to share your dataset with the public or it's open already, post it on Issues with `help wanted` tag, I might try to help train it for you, if I'm free, which is not guaranteed.
+
+Requirements:
+
+1. The total number of the image of the dataset should not be larger than 10K.
+
+2. The dataset should be in the format of this repo.
+
+3. If you post your dataset in this repo, it is open to the world. So PLEASE DO NOT upload your confidential datasets!
+
+4. If the datasets are against the law or invade one's privacy, feel free to contact me to delete it.
+
+5. Most importantly, you can't demand me to train unless I wanted to.
+
+I'll post the trained weights in this repo along with the evaluation result.
+
+Hope it help whoever wants to try efficientdet in pytorch.
+
+
 ## Performance
 
 ## Pretrained weights and benchmark
