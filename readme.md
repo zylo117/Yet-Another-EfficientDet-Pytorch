@@ -21,6 +21,7 @@ Requirements:
 I'll post the trained weights in this repo along with the evaluation result.
 
 Hope it help whoever wants to try efficientdet in pytorch.
+Training examples can be found here. [tutorials](tutorial/). The trained weights can be found here. [weights](https://github.com/zylo117/Yet-Another-EfficientDet-Pytorch/releases/tag/custom_datasets)
 
 
 ## Performance
@@ -91,7 +92,7 @@ The speed/FPS test includes the time of post-processing with no jit/data precisi
 
 Training EfficientDet is a painful and time-consuming task. You shouldn't expect to get a good result within a day or two. Please be patient.
 
-Check out this [tutorial](tutorial/train_shape.ipynb) if you are new to this. You can run it on colab with GPU support.
+Check out this [tutorial](tutorial/) if you are new to this. You can run it on colab with GPU support.
 
 ### 1. Prepare your dataset
 
