@@ -21,6 +21,7 @@ Requirements:
 I'll post the trained weights in this repo along with the evaluation result.
 
 Hope it help whoever wants to try efficientdet in pytorch.
+
 Training examples can be found here. [tutorials](tutorial/). The trained weights can be found here. [weights](https://github.com/zylo117/Yet-Another-EfficientDet-Pytorch/releases/tag/custom_datasets)
 
 
