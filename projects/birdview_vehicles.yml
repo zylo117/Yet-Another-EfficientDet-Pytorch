@@ -1,0 +1,14 @@
+project_name: birdview_vehicles  # also the folder name of the dataset that under data_path folder
+train_set: train
+val_set: val
+num_gpus: 1
+
+# mean and std in RGB order, actually this part should remain unchanged as long as your dataset is similar to coco.
+mean: [ 0.485, 0.456, 0.406 ]
+std: [ 0.229, 0.224, 0.225 ]
+
+# this anchor is adapted to the dataset
+anchors_scales: '[2 ** 0, 2 ** (1.0 / 3.0), 2 ** (2.0 / 3.0)]'
+anchors_ratios: '[(0.7, 1.4), (1.0, 1.0), (1.5, 0.7)]'
+
+obj_list: [ 'large-vehicle', 'small-vehicle' ]
