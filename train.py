@@ -20,7 +20,8 @@ from backbone import EfficientDetBackbone
 from efficientdet.dataset import CocoDataset, Resizer, Normalizer, Augmenter, collater
 from efficientdet.loss import FocalLoss
 from utils.sync_batchnorm import patch_replication_callback
-from utils.utils import replace_w_sync_bn, CustomDataParallel, get_last_weights, init_weights, boolean_string
+from utils.utils import replace_w_sync_bn, get_last_weights, init_weights, boolean_string
+import torch.distributed as dist
 
 
 class Params:
@@ -181,9 +182,13 @@ def train(opt):
     if params.num_gpus > 0:
         model = model.cuda()
         if params.num_gpus > 1:
-            model = CustomDataParallel(model, params.num_gpus)
+            # https://pytorch.org/tutorials/intermediate/dist_tuto.html
+            dist.init_process_group(backend='nccl', init_method='tcp://127.0.0.1:6666', world_size=1, rank=0)
+            model = torch.nn.parallel.DistributedDataParallel(model, find_unused_parameters=True)
             if use_sync_bn:
                 patch_replication_callback(model)
+    
+    torch.backends.cudnn.benchmark = True
 
     if opt.optim == 'adamw':
         optimizer = torch.optim.AdamW(model.parameters(), opt.lr)
@@ -315,7 +320,7 @@ def train(opt):
 
 
 def save_checkpoint(model, name):
-    if isinstance(model, CustomDataParallel):
+    if isinstance(model, torch.nn.parallel.DistributedDataParallel):
         torch.save(model.module.model.state_dict(), os.path.join(opt.saved_path, name))
     else:
         torch.save(model.model.state_dict(), os.path.join(opt.saved_path, name))
