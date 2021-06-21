@@ -82,7 +82,7 @@ The speed/FPS test includes the time of post-processing with no jit/data precisi
 ## Demo
 
     # install requirements
-    pip install pycocotools numpy opencv-python tqdm tensorboard tensorboardX pyyaml webcolors
+    pip install pycocotools numpy opencv-python tqdm tensorboard tensorboardX pyyaml webcolors wandb
     pip install torch==1.4.0
     pip install torchvision==0.5.0
      
