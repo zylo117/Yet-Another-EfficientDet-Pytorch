@@ -10,6 +10,7 @@ import traceback
 import numpy as np
 import torch
 import yaml
+import wandb
 from tensorboardX import SummaryWriter
 from torch import nn
 from torch.utils.data import DataLoader
@@ -173,6 +174,7 @@ def train(opt):
     else:
         use_sync_bn = False
 
+    wandb.init() # initialize a wandb run
     writer = SummaryWriter(opt.log_path + f'/{datetime.datetime.now().strftime("%Y%m%d-%H%M%S")}/')
 
     # warp the model with loss function, to reduce the memory usage on gpu0 and speedup
@@ -248,7 +250,13 @@ def train(opt):
                     # log learning_rate
                     current_lr = optimizer.param_groups[0]['lr']
                     writer.add_scalar('learning_rate', current_lr, step)
-
+                    wandb.log({"step" : step,
+                                "epoch": epoch,
+                                "train-loss": loss,
+                                "train-reg-loss": reg_loss,
+                                "train-cls-loss" : cls_loss,
+                                "lr" : current_lr
+                                })
                     step += 1
 
                     if step % opt.save_interval == 0 and step > 0:
@@ -295,6 +303,12 @@ def train(opt):
                 writer.add_scalars('Loss', {'val': loss}, step)
                 writer.add_scalars('Regression_loss', {'val': reg_loss}, step)
                 writer.add_scalars('Classfication_loss', {'val': cls_loss}, step)
+
+                wandb.log({"step" : step,
+                            "val-loss" : loss,
+                            "val-reg-loss" : reg_loss,
+                            "val-cls-loss" : cls_loss,
+                            "epoch" : epoch})
 
                 if loss + opt.es_min_delta < best_loss:
                     best_loss = loss
