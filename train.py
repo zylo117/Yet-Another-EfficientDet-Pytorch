@@ -42,7 +42,7 @@ def get_args():
                              'useful in early stage convergence or small/easy dataset')
     parser.add_argument('--lr', type=float, default=1e-4)
     parser.add_argument('--optim', type=str, default='adamw', help='select optimizer for training, '
-                                                                   'suggest using \'admaw\' until the'
+                                                                   'suggest using \'adamw\' until the'
                                                                    ' very final stage then switch to \'sgd\'')
     parser.add_argument('--num_epochs', type=int, default=500)
     parser.add_argument('--val_interval', type=int, default=1, help='Number of epoches between valing phases')
